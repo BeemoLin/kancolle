@@ -13,16 +13,22 @@ def click_and_wait(position, blur, sleep_sec):
 	click_no_wait(position, blur)
 	_sleep(sleep_sec)
 
+
 def click_no_wait(position, blur):
 	click_x = position[0] + _rand(blur)
 	click_y = position[1] + _rand(blur)
 	_m.click(click_x, click_y)
-	_m.click(click_x, click_y)
 
 def change_window():
 	_k.press_key('command')
-	_k.tap_key('tab', interval=0.1)
+	_k.tap_key('tab', interval=0.2)
 	_k.release_key('command')
+	_sleep(0.5)
+
+def focus_screen():
+	click_and_wait((0, 600), 0, 0.5)
+	click_and_wait((0, 600), 0, 0.5)
+	click_and_wait((200, 40), 0, 0.5)
 
 def _sleep(sleep_sec):
 	time.sleep(sleep_sec)
