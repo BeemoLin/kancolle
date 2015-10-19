@@ -142,7 +142,8 @@ def expedition_msg(data, team):
 	return show_msg
 
 def expedition_cmd(team, (area, no)):
-
+	u.focus_screen()
+	time.sleep(3.0)
 	# wellcome back
 	auto_cmd("place p")
 	auto_cmd("poi")
