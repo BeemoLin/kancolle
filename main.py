@@ -4,6 +4,7 @@ import sys
 import os
 import glob
 import json
+import random
 from pprint import pprint
 
 # three party
@@ -15,10 +16,18 @@ init()
 _flag = True
 #click LAG
 _LAG = 2.0
+#_task_list = ((海域, 任務), (海域, 任務), (海域, 任務))
+#_task_list = ((1, 5), (3, 4), (5, 5))
+_task_list = ((1, 3), (3, 4), (5, 5))
+#delay task default(150sec)
+min_delay = 60
+delay_task = (180, 180, 180)
+# don't need set this, is radom
+_delay_task = [0, 0, 0]
 # current place
 _place = "port"
 #screen offset
-_offset = (0, 50)
+_offset = (10, 50)
 
 #self model import
 import utility
@@ -83,7 +92,7 @@ def auto_e():
 			e_task()
 			time.sleep(1)
 		except KeyboardInterrupt:
-			print colored("自動遠征が中断されました", "red")
+			print colored("\n自動遠征が中断されました", "red")
 			e_flag = False
 
 def e_task():
@@ -93,7 +102,7 @@ def e_task():
 	show_msg = colored("電：任務中 ", "green")
 	
 	if files:
-		update_time = time.strftime("(%a)%X ", time.localtime(os.path.getmtime(files[0])))
+		update_time = time.strftime("(%a)%H:%M ", time.localtime(os.path.getmtime(files[0])))
 
 		data = read_port(files[0])
 		show_msg += expedition_msg(data, 1)
@@ -108,13 +117,13 @@ def e_task():
 	sys.stdout.flush()
 	
 	if expedition_status(data, 1) is False:
-		expedition_cmd(1, (1, 5))
+		expedition_cmd(1, _task_list[0])
 	
 	if expedition_status(data, 2) is False:
-		expedition_cmd(2, (3, 4))
+		expedition_cmd(2, _task_list[1])
 	
 	if expedition_status(data, 3) is False:
-		expedition_cmd(3, (5, 5))
+		expedition_cmd(3, _task_list[2])
 
 def read_port(file_path):
 	with open(file_path)as data_file:
@@ -123,22 +132,31 @@ def read_port(file_path):
 
 
 def expedition_status(data, team):
+	global _delay_task
 	team_data = str(data["api_data"]["api_deck_port"][team]["api_mission"][2])[0:10]
-		
-	if time.localtime(float(team_data)) > time.localtime():
+	
+	if _delay_task[team - 1] <= 1:
+		_delay_task[team - 1] = min_delay + random.randint(0, delay_task[team - 1])
+
+	if time.localtime(float(team_data) + _delay_task[team - 1]) > time.localtime():
 		return True	
 	else:
+		_delay_task[team - 1] = min_delay + random.randint(0, delay_task[team - 1])
 		return False
 
 def expedition_msg(data, team):
 	team_data = str(data["api_data"]["api_deck_port"][team]["api_mission"][2])[0:10]
-	team_time = time.strftime("(%a)%X ", time.localtime(float(team_data)))
+	team_delay = "-" + str(_delay_task[team - 1]) + "s "
+	team_time = time.strftime("(%a)%H:%M", time.localtime(float(team_data) + _delay_task[team - 1]))
 	show_msg = colored(str(team + 1) + "番隊:", "green")
-		
-	if time.localtime(float(team_data)) > time.localtime():
-		show_msg += colored(team_time, "yellow")
+	
+	if time.localtime(float(team_data) - 1200) > (time.localtime()):
+		show_msg += colored(team_time, "cyan") + team_delay
+	elif time.localtime(float(team_data)) > (time.localtime(time.time())):
+		show_msg += colored(team_time, "magenta") + team_delay
 	else:
-		show_msg += colored(team_time, "red")
+		show_msg += colored(team_time, "red") + team_delay
+
 	return show_msg
 
 def expedition_cmd(team, (area, no)):
@@ -232,7 +250,7 @@ def check_command(input_cmd):
 				print input_cmd + " poi?"
 
 def run_command(cmd):
-	print cmd[0]
+	print colored("電：", "green") + cmd[0]
 	click_point = (cmd[1][0] + _offset[0], cmd[1][1] + _offset[1])
 	u.click_and_wait(click_point, cmd[2], _LAG)
 

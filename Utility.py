@@ -1,7 +1,9 @@
-from pymouse import PyMouse
-from pykeyboard import PyKeyboard
+# encoding: utf-8
 import time
 import random
+from pymouse import PyMouse
+from pykeyboard import PyKeyboard
+from termcolor import colored
 
 _m = PyMouse()
 _k = PyKeyboard()
@@ -15,8 +17,9 @@ def click_and_wait(position, blur, sleep_sec):
 
 
 def click_no_wait(position, blur):
-	click_x = position[0] + _rand(blur)
-	click_y = position[1] + _rand(blur)
+	click_x = position[0] + _rand(blur[0])
+	click_y = position[1] + _rand(blur[1])
+	print colored('がるるー: (' + str(click_x) + ', ' + str(click_y) + ')', 'grey')
 	_m.click(click_x, click_y)
 
 def change_window():
@@ -26,12 +29,15 @@ def change_window():
 	_sleep(0.5)
 
 def focus_screen():
-	click_and_wait((0, 600), 0, 0.5)
-	click_and_wait((0, 600), 0, 0.5)
-	click_and_wait((200, 40), 0, 0.5)
+	#click_and_wait(position, blur, lag)
+	click_and_wait((0, 600), (0, 0), 0.5)
+	click_and_wait((0, 600), (0, 0), 0.5)
+	click_and_wait((200, 40), (0, 0), 0.5)
 
 def _sleep(sleep_sec):
-	time.sleep(sleep_sec)
+	rand_lag = float(random.randint(0, 3000) / 1000)
+	print colored('ちょっと待って:' + str(sleep_sec + rand_lag), 'grey')
+	time.sleep(sleep_sec + rand_lag)
 
 def _rand(rand_range):
 	rand = random.randint(-rand_range, rand_range)
