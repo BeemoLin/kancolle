@@ -30,8 +30,8 @@ def change_window():
 
 def focus_screen():
 	#click_and_wait(position, blur, lag)
-	click_and_wait((0, 600), (0, 0), 0.5)
-	click_and_wait((0, 600), (0, 0), 0.5)
+	click_and_wait((0, 150), (0, 0), 0.5)
+	click_and_wait((0, 150), (0, 0), 0.5)
 	click_and_wait((200, 40), (0, 0), 0.5)
 
 def _sleep(sleep_sec):

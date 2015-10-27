@@ -17,17 +17,24 @@ _flag = True
 #click LAG
 _LAG = 2.0
 #_task_list = ((海域, 任務), (海域, 任務), (海域, 任務))
-#_task_list = ((1, 5), (3, 4), (5, 5))
-_task_list = ((1, 3), (3, 4), (5, 5))
+# 20~40MIN:[3]LV3 3SS [6鋁]LV4 4SS or DD
+# 1~2HR:[5]LV3 1輕 2DD 1SS [21]LV15+30 1輕 5DD 4罐 [37]LV50+200 1輕 5DD 5罐
+# 1~2HR:[38]LV65+240 1輕 5DD 10罐 [20 開發]LV1 1SS 1輕
+# 6~9HR:[36]LV30 2水母 1輕 1DD 2SS [19]LV20 2航戰 2DD 2SS
+#常態任務
+#_task_list = ((5, 4), (3, 4), (5, 5))
+#高速任務
+_task_list = ((1, 6), (3, 5), (5, 6))
+
 #delay task default(150sec)
-min_delay = 60
-delay_task = (180, 180, 180)
+min_delay = 30
+delay_task = (120, 120, 120)
 # don't need set this, is radom
 _delay_task = [0, 0, 0]
 # current place
 _place = "port"
 #screen offset
-_offset = (10, 50)
+_offset = (7, 35)
 
 #self model import
 import utility
@@ -46,6 +53,89 @@ def main():
 			continue
 
 		check_command(_user_input)
+
+def expedition_cmd(team, (area, no)):
+	u.focus_screen()
+	u._sleep(3.0)
+	# wellcome back
+	auto_cmd("place p")
+	auto_cmd("poi")
+	auto_cmd("go")
+	auto_cmd("home")
+	u._sleep(4.0)
+	auto_cmd("poi")
+	auto_cmd("poi")
+	u._sleep(4.0)
+	auto_cmd("poi")
+	auto_cmd("poi")
+	u._sleep(4.0)
+	auto_cmd("poi")
+	auto_cmd("poi")
+	u._sleep(4.0)
+	auto_cmd("poi")
+	auto_cmd("poi")
+	u._sleep(4.0)
+	auto_cmd("poi")
+	auto_cmd("poi")
+	u._sleep(4.0)
+	auto_cmd("poi")
+	auto_cmd("poi")
+	u._sleep(4.0)
+	auto_cmd("poi")
+	auto_cmd("poi")
+
+	#refill
+	u._sleep(2.0)
+	auto_cmd("go")
+	auto_cmd("place r")
+	auto_cmd("enter")
+	auto_cmd("f1")
+	auto_cmd("all")
+	auto_cmd("f2")
+	auto_cmd("all")
+	auto_cmd("f3")
+	auto_cmd("all")
+	auto_cmd("f4")
+	auto_cmd("all")
+	auto_cmd('f' + str(team + 1))
+	auto_cmd("all")
+	u._sleep(2.0)
+	auto_cmd("place p")
+	auto_cmd("home")
+	auto_cmd("go")
+	auto_cmd("place r")
+	auto_cmd("enter")
+	auto_cmd("f1")
+	auto_cmd("all")
+	auto_cmd("f2")
+	auto_cmd("all")
+	auto_cmd("f3")
+	auto_cmd("all")
+	auto_cmd("f4")
+	auto_cmd("all")
+	auto_cmd('f' + str(team + 1))
+	auto_cmd("all")
+
+	#expedition
+	u._sleep(4.0)
+	auto_cmd("place p")
+	auto_cmd("home")
+	auto_cmd("go")
+	auto_cmd("place e")
+	auto_cmd("enter")
+	auto_cmd("e" + str(area))
+	auto_cmd(str(no))
+	auto_cmd("ok")
+	auto_cmd("f" + str(team + 1))
+	auto_cmd("start")
+
+	#back home
+	u._sleep(5.0)
+	auto_cmd("place p")
+	auto_cmd("home")
+	auto_cmd("go")
+	auto_cmd("home")
+	auto_cmd("poi")
 
 def is_handled_by_predefined_func(input_cmd):
 	global _place
@@ -96,9 +186,8 @@ def auto_e():
 			e_flag = False
 
 def e_task():
-	g = glob
-	files = sorted(g.glob('../logbook/json/*PORT.json'), key=os.path.getmtime, reverse = True)
-	
+	files = getJsonList()
+
 	show_msg = colored("電：任務中 ", "green")
 	
 	if files:
@@ -124,6 +213,11 @@ def e_task():
 	
 	if expedition_status(data, 3) is False:
 		expedition_cmd(3, _task_list[2])
+
+def getJsonList():
+	g = glob
+	files = sorted(g.glob('../logbook/json/*PORT.json'), key=os.path.getmtime, reverse = True)
+	return files
 
 def read_port(file_path):
 	with open(file_path)as data_file:
@@ -158,58 +252,6 @@ def expedition_msg(data, team):
 		show_msg += colored(team_time, "red") + team_delay
 
 	return show_msg
-
-def expedition_cmd(team, (area, no)):
-	u.focus_screen()
-	time.sleep(3.0)
-	# wellcome back
-	auto_cmd("place p")
-	auto_cmd("poi")
-	auto_cmd("go")
-	auto_cmd("home")
-	auto_cmd("go")
-	auto_cmd("home")
-	auto_cmd("poi")
-	time.sleep(8.0)
-	auto_cmd("poi")
-	auto_cmd("poi")
-	auto_cmd("poi")
-	time.sleep(8.0)
-	auto_cmd("poi")
-	auto_cmd("poi")
-	auto_cmd("poi")
-	time.sleep(8.0)
-	auto_cmd("poi")
-	auto_cmd("poi")
-
-	#refill
-	time.sleep(4.0)
-	auto_cmd("go")
-	auto_cmd("place r")
-	auto_cmd("enter")
-	auto_cmd("f" + str(team + 1))
-	auto_cmd("all")
-
-	#expedition
-	time.sleep(4.0)
-	auto_cmd("place p")
-	auto_cmd("home")
-	auto_cmd("go")
-	auto_cmd("place e")
-	auto_cmd("enter")
-	auto_cmd("e" + str(area))
-	auto_cmd(str(no))
-	auto_cmd("ok")
-	auto_cmd("f" + str(team + 1))
-	auto_cmd("start")
-
-	#back home
-	time.sleep(5.0)
-	auto_cmd("place p")
-	auto_cmd("home")
-	auto_cmd("go")
-	auto_cmd("home")
-	auto_cmd("poi")
 
 def check_task_command(input_cmd):
 	cmd = {}
