@@ -1,6 +1,7 @@
 # encoding: utf-8
-import time
 import sys
+import time
+import datetime
 import os
 import glob
 import json
@@ -24,7 +25,12 @@ _LAG = 2.0
 #常態任務
 #_task_list = ((5, 4), (3, 4), (5, 5))
 #高速任務
-_task_list = ((1, 6), (3, 5), (5, 6))
+#_task_list = ((1, 6), (3, 5), (5, 6))
+_task_list = ((1, 6), (1, 2), (5, 6))
+#_task_list = ((1, 5), (3, 5), (5, 5))
+
+#sleep
+_sleep = (3, 7)
 
 #delay task default(150sec)
 min_delay = 30
@@ -179,7 +185,17 @@ def auto_e():
 	e_flag = True
 	while(e_flag):
 		try:
-			e_task()
+			now_time = time.strftime("(%a)%X", time.localtime())
+			now_hour = datetime.datetime.now().hour
+			
+			if(now_hour > _sleep[0] and now_hour <= _sleep[1]):
+				show_msg = colored("電：自動遠征は休憩中です ", "green")
+				show_msg += colored(_sleep[1], "yellow") + colored("時に続きます ", "green")
+				show_msg += colored("今:", "green") + colored(now_time, "yellow")
+				print_oneline(show_msg)	
+			else:
+				e_task()
+			
 			time.sleep(1)
 		except KeyboardInterrupt:
 			print colored("\n自動遠征が中断されました", "red")
@@ -201,9 +217,8 @@ def e_task():
 	
 	now_time = time.strftime("(%a)%X", time.localtime())
 	show_msg += colored("今:", "green") + colored(now_time, "yellow")
-	
-	sys.stdout.write("\r{}".format(show_msg))
-	sys.stdout.flush()
+
+	print_oneline(show_msg)
 	
 	if expedition_status(data, 1) is False:
 		expedition_cmd(1, _task_list[0])
@@ -218,6 +233,10 @@ def getJsonList():
 	g = glob
 	files = sorted(g.glob('../logbook/json/*PORT.json'), key=os.path.getmtime, reverse = True)
 	return files
+
+def print_oneline(print_msg):
+	sys.stdout.write("\r{}".format(print_msg))
+	sys.stdout.flush()
 
 def read_port(file_path):
 	with open(file_path)as data_file:
@@ -244,7 +263,7 @@ def expedition_msg(data, team):
 	team_time = time.strftime("(%a)%H:%M", time.localtime(float(team_data) + _delay_task[team - 1]))
 	show_msg = colored(str(team + 1) + "番隊:", "green")
 	
-	if time.localtime(float(team_data) - 1200) > (time.localtime()):
+	if time.localtime(float(team_data) - 300) > (time.localtime()):
 		show_msg += colored(team_time, "cyan") + team_delay
 	elif time.localtime(float(team_data)) > (time.localtime(time.time())):
 		show_msg += colored(team_time, "magenta") + team_delay
