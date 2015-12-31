@@ -14,11 +14,13 @@ from termcolor import colored
 #colored init
 init()
 
+_task_list = ((1, 2), (1, 6), (5, 6))
+
 _flag = True
 #click LAG
 _LAG = 2.0
 #_task_list = ((海域, 任務), (海域, 任務), (海域, 任務))
-_task_list = ((1, 6), (3, 5), (5, 6))
+#_task_list = ("", (1, 2), (2, 5))
 # 鋁 6 15 35 36
 # 20~40MIN:[3]LV3 3SS [6鋁]LV4 4SS or DD
 # 1~2HR:[5]LV3 1輕 2DD 1SS [21]LV15+30 1輕 5DD 4罐 [37]LV50+200 1輕 5DD 5罐
@@ -31,7 +33,7 @@ _task_list = ((1, 6), (3, 5), (5, 6))
 #_task_list = ((1, 5), (3, 5), (5, 5))
 
 #sleep
-_sleep = (3, 7)
+_sleep = (2, 5)
 
 #delay task default(150sec)
 min_delay = 30
@@ -90,23 +92,20 @@ def expedition_cmd(team, (area, no)):
 	u._sleep(4.0)
 	auto_cmd("poi")
 	auto_cmd("poi")
+	u._sleep(4.0)
+	auto_cmd("poi")
+	auto_cmd("poi")
+	u._sleep(4.0)
+	auto_cmd("poi")
+	auto_cmd("poi")
+	u._sleep(4.0)
+	auto_cmd("poi")
+	auto_cmd("poi")
+	u._sleep(4.0)
+	auto_cmd("poi")
+	auto_cmd("poi")
 
 	#refill
-	u._sleep(2.0)
-	auto_cmd("go")
-	auto_cmd("place r")
-	auto_cmd("enter")
-	auto_cmd("f1")
-	auto_cmd("all")
-	auto_cmd("f2")
-	auto_cmd("all")
-	auto_cmd("f3")
-	auto_cmd("all")
-	auto_cmd("f4")
-	auto_cmd("all")
-	auto_cmd('f' + str(team + 1))
-	auto_cmd("all")
-	u._sleep(2.0)
 	auto_cmd("place p")
 	auto_cmd("home")
 	auto_cmd("go")
@@ -122,9 +121,16 @@ def expedition_cmd(team, (area, no)):
 	auto_cmd("all")
 	auto_cmd('f' + str(team + 1))
 	auto_cmd("all")
+	auto_cmd("place p")
+	auto_cmd("home")
+	auto_cmd("go")
+	auto_cmd("place r")
+	auto_cmd("enter")
+	auto_cmd('f' + str(team + 1))
+	auto_cmd("all")
 
 	#expedition
-	u._sleep(4.0)
+	u._sleep(1.0)
 	auto_cmd("place p")
 	auto_cmd("home")
 	auto_cmd("go")
@@ -137,7 +143,7 @@ def expedition_cmd(team, (area, no)):
 	auto_cmd("start")
 
 	#back home
-	u._sleep(5.0)
+	u._sleep(1.0)
 	auto_cmd("place p")
 	auto_cmd("home")
 	auto_cmd("go")
@@ -221,14 +227,17 @@ def e_task():
 
 	print_oneline(show_msg)
 	
-	if expedition_status(data, 1) is False:
-		expedition_cmd(1, _task_list[0])
+	if _task_list[0] != "":
+		if expedition_status(data, 1) is False:
+			expedition_cmd(1, _task_list[0])
 	
-	if expedition_status(data, 2) is False:
-		expedition_cmd(2, _task_list[1])
+	if _task_list[1] != "":
+		if expedition_status(data, 2) is False:
+			expedition_cmd(2, _task_list[1])
 	
-	if expedition_status(data, 3) is False:
-		expedition_cmd(3, _task_list[2])
+	if _task_list[2] != "":
+		if expedition_status(data, 3) is False:
+			expedition_cmd(3, _task_list[2])
 
 def getJsonList():
 	g = glob
