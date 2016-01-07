@@ -74,7 +74,6 @@ def expedition_cmd(team, (area, no)):
 	auto_cmd("home")
 	for r in range(3, 0, -1):
 		for j in range(10, 0, -1):
-			u._sleep(1.0)
 			auto_cmd("poi")
 		auto_cmd("place p")
 		auto_cmd("poi")
@@ -82,25 +81,21 @@ def expedition_cmd(team, (area, no)):
 		auto_cmd("home")
 
 	#refill
-	auto_cmd("place p")
-	auto_cmd("home")
-	auto_cmd("go")
-	auto_cmd("place r")
-	auto_cmd("enter")
-	auto_cmd('f' + str(team + 1))
-	auto_cmd("all")
-	auto_cmd("place p")
-	auto_cmd("home")
-	auto_cmd("go")
-	auto_cmd("place r")
-	auto_cmd("enter")
-	auto_cmd('f' + str(team + 1))
-	auto_cmd("all")
+	for r in range(2, 0, -1):
+		auto_cmd("place p")
+		auto_cmd("home")
+		u._sleep(2.0)
+		auto_cmd("go")
+		auto_cmd("place r")
+		auto_cmd("enter")
+		auto_cmd('f' + str(team + 1))
+		auto_cmd("all")
 	
 	#expedition
 	u._sleep(1.0)
 	auto_cmd("place p")
 	auto_cmd("home")
+	u._sleep(2.0)
 	auto_cmd("go")
 	auto_cmd("place e")
 	auto_cmd("enter")
@@ -115,6 +110,7 @@ def expedition_cmd(team, (area, no)):
 	auto_cmd("place p")
 	auto_cmd("home")
 	auto_cmd("go")
+	u._sleep(2.0)
 	auto_cmd("home")
 	auto_cmd("poi")
 
