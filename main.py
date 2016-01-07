@@ -52,58 +52,63 @@ import _command
 u = utility
 c = _command
 
-
 def main():
     # init something
     # ...
 	while _flag:
+		global data
+		global body
+		body = read_port(getJsonList('START2.json')[0])
+		data = read_port(getJsonList('PORT.json')[0])
 		_user_input = raw_input(colored("電：ご命令を", "green") + ">")
 		if is_handled_by_predefined_func(_user_input) is True:
 			continue
 
 		check_command(_user_input)
 
-def expedition_cmd(team, (area, no)):
+def expedition_cmd(team, (area, no), come_back_team):
 	u.focus_screen()
 	u._sleep(3.0)
 	
+	print colored(team, "yellow") + colored("艦隊戻りました", "green")
+
 	# wellcome back
 	auto_cmd("place p")
 	auto_cmd("poi")
 	auto_cmd("go")
 	auto_cmd("home")
-	for r in range(3, 0, -1):
-		for j in range(10, 0, -1):
+	for r in range(come_back_team, 0, -1):
+		for j in range(7, 0, -1):
 			auto_cmd("poi")
 		auto_cmd("place p")
 		auto_cmd("poi")
 		auto_cmd("go")
 		auto_cmd("home")
-
-	#refill
-	for r in range(2, 0, -1):
-		auto_cmd("place p")
-		auto_cmd("home")
-		u._sleep(2.0)
-		auto_cmd("go")
-		auto_cmd("place r")
-		auto_cmd("enter")
-		auto_cmd('f' + str(team + 1))
-		auto_cmd("all")
 	
-	#expedition
-	u._sleep(1.0)
+	#refill
 	auto_cmd("place p")
 	auto_cmd("home")
 	u._sleep(2.0)
 	auto_cmd("go")
-	auto_cmd("place e")
+	auto_cmd("place r")
 	auto_cmd("enter")
-	auto_cmd("e" + str(area))
-	auto_cmd(str(no))
-	auto_cmd("ok")
-	auto_cmd("f" + str(team + 1))
-	auto_cmd("start")
+	auto_cmd('f' + str(team + 1))
+	auto_cmd("all")
+	auto_cmd("place p")
+	auto_cmd("home")
+	u._sleep(2.0)
+	
+	if get_flag_ship_fuel(team):
+		#expedition
+		auto_cmd("place p")
+		auto_cmd("go")
+		auto_cmd("place e")
+		auto_cmd("enter")
+		auto_cmd("e" + str(area))
+		auto_cmd(str(no))
+		auto_cmd("ok")
+		auto_cmd("f" + str(team + 1))
+		auto_cmd("start")
 
 	#back home
 	u._sleep(1.0)
@@ -120,6 +125,11 @@ def is_handled_by_predefined_func(input_cmd):
 	if input_cmd == "exit":
 		_flag = False
 		print colored("電：お疲れさまでした", "green")
+		return True
+	elif input_cmd == 'oil':
+		get_flag_ship_fuel(1)
+		get_flag_ship_fuel(2)
+		get_flag_ship_fuel(3)
 		return True
 	elif input_cmd == 'place p':
 		_place = "port"
@@ -173,7 +183,7 @@ def auto_e():
 			e_flag = False
 
 def e_task():
-	files = getJsonList()
+	files = getJsonList('PORT.json')
 
 	show_msg = colored("電：任務中 ", "green")
 	
@@ -191,21 +201,28 @@ def e_task():
 
 	print_oneline(show_msg)
 	
+	come_back_team = 0
+	come_back_team_id = -1
+
 	if _task_list[0] != "":
 		if expedition_status(data, 1) is False:
-			expedition_cmd(1, _task_list[0])
-	
+			come_back_team += 1
+			come_back_team_id = 1
 	if _task_list[1] != "":
 		if expedition_status(data, 2) is False:
-			expedition_cmd(2, _task_list[1])
-	
+			come_back_team += 1
+			come_back_team_id = 2
 	if _task_list[2] != "":
 		if expedition_status(data, 3) is False:
-			expedition_cmd(3, _task_list[2])
+			come_back_team += 1
+			come_back_team_id = 3
 
-def getJsonList():
+	if come_back_team > 0 and come_back_team_id != -1:
+		expedition_cmd(come_back_team_id, _task_list[come_back_team_id - 1], come_back_team)
+
+def getJsonList(file_name):
 	g = glob
-	files = sorted(g.glob('../logbook/json/*PORT.json'), key=os.path.getmtime, reverse = True)
+	files = sorted(g.glob('../logbook/json/*' + file_name), key = os.path.getmtime, reverse = True)
 	return files
 
 def print_oneline(print_msg):
@@ -217,6 +234,26 @@ def read_port(file_path):
 		data = json.load(data_file)
 	return data
 
+def get_flag_ship_fuel(team):
+	data = read_port(getJsonList('PORT.json')[0])
+	flag_ship_id = str(data["api_data"]["api_deck_port"][team]["api_ship"][0])
+	ships = data["api_data"]["api_ship"]
+	ship_api_id = -1
+	ship_current_fuel = -1
+	for ship in ships:
+		if str(ship["api_id"]) == str(flag_ship_id):
+			ship_api_id = ship["api_ship_id"]
+			ship_current_fuel = ship["api_fuel"]
+
+	max_fuel = body["api_data"]["api_mst_ship"][ship_api_id]["api_fuel_max"]
+	if ship_current_fuel / float(max_fuel) > 0.99:
+		print str(team) + "番隊:" + colored("Refill done.", "green")
+		return True
+	else:
+		print str(team) + "番隊:" + colored("Not refill yet.", "red")
+		return False
+		
+	
 
 def expedition_status(data, team):
 	global _delay_task
