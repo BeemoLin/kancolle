@@ -66,6 +66,7 @@ def main():
 def expedition_cmd(team, (area, no)):
 	u.focus_screen()
 	u._sleep(3.0)
+	
 	# wellcome back
 	auto_cmd("place p")
 	auto_cmd("poi")
@@ -95,7 +96,7 @@ def expedition_cmd(team, (area, no)):
 	auto_cmd("enter")
 	auto_cmd('f' + str(team + 1))
 	auto_cmd("all")
-
+	
 	#expedition
 	u._sleep(1.0)
 	auto_cmd("place p")
