@@ -86,20 +86,21 @@ def expedition_cmd(team, (area, no), come_back_team):
 		auto_cmd("home")
 	
 	#refill
-	auto_cmd("place p")
-	auto_cmd("home")
-	u._sleep(2.0)
-	auto_cmd("go")
-	auto_cmd("place r")
-	auto_cmd("enter")
-	auto_cmd('f' + str(team + 1))
-	auto_cmd("all")
-	auto_cmd("place p")
-	auto_cmd("home")
-	u._sleep(2.0)
+	if get_flag_ship_fuel(team) == False:
+		auto_cmd("place p")
+		auto_cmd("home")
+		u._sleep(2.0)
+		auto_cmd("go")
+		auto_cmd("place r")
+		auto_cmd("enter")
+		auto_cmd('f' + str(team + 1))
+		auto_cmd("all")
+		auto_cmd("place p")
+		auto_cmd("home")
+		u._sleep(2.0)
 	
+	#expedition
 	if get_flag_ship_fuel(team):
-		#expedition
 		auto_cmd("place p")
 		auto_cmd("go")
 		auto_cmd("place e")
