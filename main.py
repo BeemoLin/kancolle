@@ -18,7 +18,7 @@ _task_list = ((1, 2), (1, 5), (5, 6))
 
 _flag = True
 #click LAG
-_LAG = 2.0
+_LAG = 1.8
 #_task_list = ((海域, 任務), (海域, 任務), (海域, 任務))
 #_task_list = ("", (1, 2), (2, 5))
 # 鋁 6 15 35 36
@@ -58,8 +58,8 @@ def main():
 	while _flag:
 		global data
 		global body
-		body = read_port(getJsonList('START2.json')[0])
-		data = read_port(getJsonList('PORT.json')[0])
+		body = read_port('../poi/cache/START2.json')
+		data = read_port('../poi/cache/PORT.json')
 		_user_input = raw_input(colored("電：ご命令を", "green") + ">")
 		if is_handled_by_predefined_func(_user_input) is True:
 			continue
@@ -184,18 +184,17 @@ def auto_e():
 			e_flag = False
 
 def e_task():
-	files = getJsonList('PORT.json')
+	file_path = '../poi/cache/PORT.json'
 
 	show_msg = colored("電：任務中 ", "green")
 	
-	if files:
-		update_time = time.strftime("(%a)%H:%M ", time.localtime(os.path.getmtime(files[0])))
+	update_time = time.strftime("(%a)%H:%M ", time.localtime(os.path.getmtime(file_path)))
 
-		data = read_port(files[0])
-		show_msg += expedition_msg(data, 1)
-		show_msg += expedition_msg(data, 2)
-		show_msg += expedition_msg(data, 3)
-		show_msg += colored("更新:" , "green") + colored(update_time, "yellow")
+	data = read_port(file_path)
+	show_msg += expedition_msg(data, 1)
+	show_msg += expedition_msg(data, 2)
+	show_msg += expedition_msg(data, 3)
+	show_msg += colored("更新:" , "green") + colored(update_time, "yellow")
 	
 	now_time = time.strftime("(%a)%X", time.localtime())
 	show_msg += colored("今:", "green") + colored(now_time, "yellow")
@@ -221,24 +220,26 @@ def e_task():
 	if come_back_team > 0 and come_back_team_id != -1:
 		expedition_cmd(come_back_team_id, _task_list[come_back_team_id - 1], come_back_team)
 
-def getJsonList(file_name):
-	g = glob
-	files = sorted(g.glob('../logbook/json/*' + file_name), key = os.path.getmtime, reverse = True)
-	return files
-
 def print_oneline(print_msg):
 	sys.stdout.write("\r{}".format(print_msg))
 	sys.stdout.flush()
 
 def read_port(file_path):
+	read_data = {}
 	with open(file_path)as data_file:
-		data = json.load(data_file)
-	return data
+		try: 
+			read_data = json.load(data_file)
+		except:
+			print colored("[error] read_port ", "red") + read_data
+	return read_data
+
+		
+	
 
 def get_flag_ship_fuel(team):
-	data = read_port(getJsonList('PORT.json')[0])
-	flag_ship_id = str(data["api_data"]["api_deck_port"][team]["api_ship"][0])
-	ships = data["api_data"]["api_ship"]
+	data = read_port('../poi/cache/PORT.json')
+	flag_ship_id = str(data["api_deck_port"][team]["api_ship"][0])
+	ships = data["api_ship"]
 	ship_api_id = -1
 	ship_current_fuel = -1
 	for ship in ships:
@@ -246,19 +247,26 @@ def get_flag_ship_fuel(team):
 			ship_api_id = ship["api_ship_id"]
 			ship_current_fuel = ship["api_fuel"]
 
-	max_fuel = body["api_data"]["api_mst_ship"][ship_api_id]["api_fuel_max"]
+	max_fuel = -1
+	ship_name = "nil"
+	ship_info_list = body["api_mst_ship"]
+	for ship_info in ship_info_list:
+		if str(ship_info["api_id"]) == str(ship_api_id):
+			max_fuel = ship_info["api_fuel_max"]
+			ship_name = ship_info["api_name"].encode('utf-8')
+
 	if ship_current_fuel / float(max_fuel) > 0.99:
-		print str(team) + "番隊:" + colored("Refill done.", "green")
+		print str(team) + "番隊:" + ship_name + colored(" Refill done.", "green")
 		return True
 	else:
-		print str(team) + "番隊:" + colored("Not refill yet.", "red")
+		print str(team) + "番隊:" + ship_name + colored(" Not refill yet.", "red")
 		return False
 		
 	
 
 def expedition_status(data, team):
 	global _delay_task
-	team_data = str(data["api_data"]["api_deck_port"][team]["api_mission"][2])[0:10]
+	team_data = str(data["api_deck_port"][team]["api_mission"][2])[0:10]
 	
 	if _delay_task[team - 1] <= 1:
 		_delay_task[team - 1] = min_delay + random.randint(0, delay_task[team - 1])
@@ -270,7 +278,7 @@ def expedition_status(data, team):
 		return False
 
 def expedition_msg(data, team):
-	team_data = str(data["api_data"]["api_deck_port"][team]["api_mission"][2])[0:10]
+	team_data = str(data["api_deck_port"][team]["api_mission"][2])[0:10]
 	team_delay = "-" + str(_delay_task[team - 1]) + "s "
 	team_time = time.strftime("(%a)%H:%M", time.localtime(float(team_data) + _delay_task[team - 1]))
 	show_msg = colored(str(team + 1) + "番隊:", "green")
