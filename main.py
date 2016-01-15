@@ -226,15 +226,16 @@ def print_oneline(print_msg):
 
 def read_port(file_path):
 	read_data = {}
-	with open(file_path)as data_file:
-		try: 
-			read_data = json.load(data_file)
-		except:
-			print colored("[error] read_port ", "red") + read_data
-	return read_data
+	is_json = False
 
-		
-	
+	while is_json == False:
+		with open(file_path)as data_file:
+			try: 
+				read_data = json.load(data_file)
+				is_json = True
+			except:
+				print colored("[error] read_port ", "red")
+	return read_data
 
 def get_flag_ship_fuel(team):
 	data = read_port('../poi/cache/PORT.json')
