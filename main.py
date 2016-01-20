@@ -14,11 +14,15 @@ from termcolor import colored
 #colored init
 init()
 
-_task_list = ((1, 2), (1, 5), (5, 6))
+#config import
+import config
 
 _flag = True
+# current place
+_place = "port"
+
 #click LAG
-_LAG = 1.8
+_LAG = config._LAG
 #_task_list = ((海域, 任務), (海域, 任務), (海域, 任務))
 #_task_list = ("", (1, 2), (2, 5))
 # 鋁 6 15 35 36
@@ -31,19 +35,19 @@ _LAG = 1.8
 #高速任務
 #_task_list = ((1, 6), (3, 5), (5, 6))
 #_task_list = ((1, 5), (3, 5), (5, 5))
+_task_list = config._task_list
 
 #sleep
-_sleep = (2, 5)
+_sleep = config._sleep
 
 #delay task default(150sec)
-min_delay = 30
-delay_task = (120, 120, 120)
+min_delay = config.min_delay
+delay_task = config.delay_task
 # don't need set this, is radom
-_delay_task = [0, 0, 0]
-# current place
-_place = "port"
+_delay_task = config._delay_task
+
 #screen offset
-_offset = (7, 35)
+_offset = config._offset
 
 #self model import
 import utility
