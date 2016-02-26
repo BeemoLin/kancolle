@@ -15,3 +15,6 @@ python package:
 start script ``python main.py``
 
 auto expedition ``auto e``
+
+
+http://stackoverflow.com/questions/24555044/why-sometimes-python-subprocess-failed-to-get-the-correct-exit-code-after-runnin
