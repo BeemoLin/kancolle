@@ -155,6 +155,9 @@ def is_handled_by_predefined_func(input_cmd):
 	elif input_cmd == 'auto e':
 		auto_e()
 		return False
+	elif input_cmd == 'auto c':
+		auto_c()
+		return False
 	elif input_cmd == 'game':
 		u.focus_screen()
 		return True
@@ -167,6 +170,17 @@ def is_handled_by_predefined_func(input_cmd):
 def auto_cmd(_cmd):
 	if is_handled_by_predefined_func(_cmd) is False:
 		check_task_command(_cmd)
+
+def auto_c():
+	e_flag = True
+	while(e_flag):
+		try:
+			show_msg = colored("電：伊401出撃します！", "green")
+			subprocess.call(['./kancolle-auto/run.sh'], shell=True)
+			time.sleep(1)
+		except KeyboardInterrupt:
+			print colored("\n自動出擊が中断されました", "red")
+			e_flag = False
 
 def auto_e():
 	e_flag = True
