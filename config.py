@@ -1,6 +1,5 @@
 # encoding: utf-8
 _task_list = ((5, 6), (1, 2), (2, 1))
-_sikuli_auto = True
 _flag = True
 #click LAG
 _LAG = 1.8

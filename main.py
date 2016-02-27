@@ -18,6 +18,9 @@ init()
 #config import
 import config
 
+#auto combat
+_sikuli_auto = False
+
 _flag = True
 # current place
 _place = "port"
@@ -156,7 +159,8 @@ def is_handled_by_predefined_func(input_cmd):
 		auto_e()
 		return False
 	elif input_cmd == 'auto c':
-		auto_c()
+		_sikuli_auto = True
+		auto_e()
 		return False
 	elif input_cmd == 'game':
 		u.focus_screen()
@@ -170,17 +174,6 @@ def is_handled_by_predefined_func(input_cmd):
 def auto_cmd(_cmd):
 	if is_handled_by_predefined_func(_cmd) is False:
 		check_task_command(_cmd)
-
-def auto_c():
-	e_flag = True
-	while(e_flag):
-		try:
-			show_msg = colored("電：伊401出撃します！", "green")
-			subprocess.call(['./kancolle-auto/run.sh'], shell=True)
-			time.sleep(1)
-		except KeyboardInterrupt:
-			print colored("\n自動出擊が中断されました", "red")
-			e_flag = False
 
 def auto_e():
 	e_flag = True
@@ -239,7 +232,8 @@ def e_task():
 	if come_back_team > 0 and come_back_team_id != -1:
 		expedition_cmd(come_back_team_id, _task_list[come_back_team_id - 1], come_back_team)
 	else:
-		if config._sikuli_auto:
+		if _sikuli_auto:
+			show_msg = colored("電：伊401出撃します！", "green")
 			subprocess.call(['./kancolle-auto/run.sh'], shell=True)
 
 def print_oneline(print_msg):
