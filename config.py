@@ -1,5 +1,5 @@
 # encoding: utf-8
-_task_list = ((5, 6), (1, 2), (2, 1))
+_task_list = ("", (1, 2), (2, 1))
 _flag = True
 #click LAG
 _LAG = 1.8

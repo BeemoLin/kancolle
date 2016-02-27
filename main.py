@@ -157,6 +157,7 @@ def is_handled_by_predefined_func(input_cmd):
 		print current_status()
 		return False
 	elif input_cmd == 'auto e':
+		_sikuli_auto = False
 		auto_e()
 		return False
 	elif input_cmd == 'auto c':
