@@ -131,6 +131,7 @@ def expedition_cmd(team, (area, no), come_back_team):
 def is_handled_by_predefined_func(input_cmd):
 	global _place
 	global _flag
+	global _sikuli_auto
 	if input_cmd == "exit":
 		_flag = False
 		print colored("電：お疲れさまでした", "green")
