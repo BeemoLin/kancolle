@@ -160,6 +160,9 @@ def is_handled_by_predefined_func(input_cmd):
 		auto_e()
 		return False
 	elif input_cmd == 'auto c':
+		auto_c()
+		return False
+	elif input_cmd == 'auto ec':
 		_sikuli_auto = True
 		auto_e()
 		return False
@@ -175,6 +178,18 @@ def is_handled_by_predefined_func(input_cmd):
 def auto_cmd(_cmd):
 	if is_handled_by_predefined_func(_cmd) is False:
 		check_task_command(_cmd)
+
+def auto_c():
+	e_flag = True
+	while(e_flag):
+		try:
+			show_msg = colored("電：伊401出撃します！", "green")
+			subprocess.call(['./kancolle-auto/run.sh'], shell=True)
+
+			time.sleep(1)
+		except KeyboardInterrupt:
+			print colored("\n自動出撃が中断されました", "red")
+			e_flag = False
 
 def auto_e():
 	e_flag = True
