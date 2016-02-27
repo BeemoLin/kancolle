@@ -1,6 +1,6 @@
 # encoding: utf-8
-_task_list = ((1, 2), (1, 5), (5, 6))
-
+_task_list = ((5, 6), (1, 2), (2, 1))
+_sikuli_auto = True
 _flag = True
 #click LAG
 _LAG = 1.8
@@ -18,7 +18,7 @@ _LAG = 1.8
 #_task_list = ((1, 5), (3, 5), (5, 5))
 
 #sleep
-_sleep = (0, 5)
+_sleep = (2, 3)
 
 #delay task default(150sec)
 min_delay = 30

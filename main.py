@@ -6,6 +6,7 @@ import os
 import glob
 import json
 import random
+import subprocess
 from pprint import pprint
 
 # three party
@@ -223,6 +224,9 @@ def e_task():
 
 	if come_back_team > 0 and come_back_team_id != -1:
 		expedition_cmd(come_back_team_id, _task_list[come_back_team_id - 1], come_back_team)
+	else:
+		if config._sikuli_auto:
+			subprocess.call(['./kancolle-auto/run.sh'], shell=True)
 
 def print_oneline(print_msg):
 	sys.stdout.write("\r{}".format(print_msg))
