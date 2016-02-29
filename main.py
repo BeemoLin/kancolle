@@ -156,6 +156,14 @@ def is_handled_by_predefined_func(input_cmd):
 	elif input_cmd == '?':
 		print current_status()
 		return False
+	elif input_cmd == '23':
+		subprocess.call(['./2-3.sh'], shell=True)
+		print colored("伊401", "green") + colored(" 2-3 ", "yellow") + colored("出撃します！！", "green")
+		return False
+	elif input_cmd == '321':
+		subprocess.call(['./3-2.sh'], shell=True)
+		print colored("伊401", "green") + colored(" 3-2-A ", "yellow") + colored("出撃します！！", "green")
+		return False
 	elif input_cmd == 'auto e':
 		_sikuli_auto = False
 		auto_e()

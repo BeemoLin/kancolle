@@ -1,5 +1,10 @@
 # encoding: utf-8
-_task_list = ("", (1, 2), (2, 1))
+
+#sleep
+_sleep = (1, 1)
+
+_task_list = ((1, 2), (1, 5), (5, 6))
+
 _flag = True
 #click LAG
 _LAG = 1.8
@@ -16,8 +21,6 @@ _LAG = 1.8
 #_task_list = ((1, 6), (3, 5), (5, 6))
 #_task_list = ((1, 5), (3, 5), (5, 5))
 
-#sleep
-_sleep = (2, 3)
 
 #delay task default(150sec)
 min_delay = 30
@@ -27,4 +30,4 @@ _delay_task = [0, 0, 0]
 # current place
 _place = "port"
 #screen offset
-_offset = (7, 35)
+_offset = (6, 35)
