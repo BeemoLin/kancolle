@@ -155,26 +155,58 @@ def is_handled_by_predefined_func(input_cmd):
 		return True
 	elif input_cmd == '?':
 		print current_status()
-		return False
+		return True
+	elif input_cmd == 'pvp':
+		subprocess.call(['./pvp.sh'], shell=True)
+		print colored("伊401", "green") + colored(" pvp ", "yellow") + colored("出撃します！！", "green")
+		return True
+	elif input_cmd == '11':
+		subprocess.call(['./1-1.sh'], shell=True)
+		print colored("伊401", "green") + colored(" 1-1 ", "yellow") + colored("出撃します！！", "green")
+		return True
+	elif input_cmd == '22':
+		subprocess.call(['./2-2.sh'], shell=True)
+		print colored("伊401", "green") + colored(" 2-2 ", "yellow") + colored("出撃します！！", "green")
+		return True
 	elif input_cmd == '23':
 		subprocess.call(['./2-3.sh'], shell=True)
 		print colored("伊401", "green") + colored(" 2-3 ", "yellow") + colored("出撃します！！", "green")
-		return False
+		return True
 	elif input_cmd == '321':
 		subprocess.call(['./3-2.sh'], shell=True)
 		print colored("伊401", "green") + colored(" 3-2-A ", "yellow") + colored("出撃します！！", "green")
-		return False
+		return True
+	elif input_cmd == '33':
+		subprocess.call(['./3-3.sh'], shell=True)
+		print colored("伊401", "green") + colored(" 3-3 ", "yellow") + colored("出撃します！！", "green")
+		return True
+	elif input_cmd == '54':
+		subprocess.call(['./5-4.sh'], shell=True)
+		print colored("伊401", "green") + colored(" 5-4-A ", "yellow") + colored("出撃します！！", "green")
+		return True
+	elif input_cmd == '321r':
+		subprocess.call(['./r3-2.sh'], shell=True)
+		print colored("伊401 : ふふーん♪", "green") + colored(" 3-2-A ", "yellow") + colored("伊400型の追撃はしつこいんだから！", "green")
+		return True
+	elif input_cmd == '54r':
+		subprocess.call(['./r5-4.sh'], shell=True)
+		print colored("伊401 : ふふーん♪", "green") + colored(" 5-4-A ", "yellow") + colored("伊400型の追撃はしつこいんだから！", "green")
+		return True
+	elif input_cmd == '54rb':
+		subprocess.call(['./5-4-b.sh'], shell=True)
+		print colored("伊401 : ふふーん♪", "green") + colored(" 5-4 Boss ", "yellow") + colored("伊400型の追撃はしつこいんだから！", "green")
+		return True
 	elif input_cmd == 'auto e':
 		_sikuli_auto = False
 		auto_e()
-		return False
+		return True
 	elif input_cmd == 'auto c':
 		auto_c()
-		return False
+		return True
 	elif input_cmd == 'auto ec':
 		_sikuli_auto = True
 		auto_e()
-		return False
+		return True
 	elif input_cmd == 'game':
 		u.focus_screen()
 		return True

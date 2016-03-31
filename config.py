@@ -1,9 +1,9 @@
 # encoding: utf-8
 
 #sleep
-_sleep = (1, 1)
+_sleep = (3, 5)
 
-_task_list = ((1, 2), (1, 5), (5, 6))
+_task_list = ((1, 2), (2, 2), (5, 6))
 
 _flag = True
 #click LAG
@@ -24,7 +24,7 @@ _LAG = 1.8
 
 #delay task default(150sec)
 min_delay = 30
-delay_task = (120, 120, 120)
+delay_task = (200, 200, 120)
 # don't need set this, is radom
 _delay_task = [0, 0, 0]
 # current place
