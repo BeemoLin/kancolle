@@ -204,8 +204,12 @@ def sortie_action():
             fleet_needs_resupply[1] = True
         # Check home, repair if needed, and resupply
         go_home()
+        log_success(str(combat_item.count_damage_above_limit('repair')))
         if combat_item.count_damage_above_limit('repair') > 0:
             combat_item.go_repair()
+        if settings['submarine_switch']:
+            combat_item.switch_sub()
+        log_msg("Attempting to switch out submarines!")
         resupply()
         fleet_needs_resupply[0] = False
         if settings['combined_fleet']:
@@ -527,6 +531,7 @@ while run_times > 0:
             if jst_convert(now_time).hour == 6 and quest_reset_skip is True:
                 quest_reset_skip = False
         if settings['pvp_enabled']:
+            now_time = datetime.datetime.now()
             if now_time > next_pvp_time:
                 idle = False
                 pvp_action()

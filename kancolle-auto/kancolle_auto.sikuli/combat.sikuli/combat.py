@@ -480,6 +480,18 @@ class Combat:
                                     sub_chosen = True
                                     break
                                 else:
+                                    if self.kc_region.exists(Pattern('fleetcomp_shiplist_ship_switch_button.png').exact()):
+                                        log_msg("fleetcomp_shiplist_ship_switch_button")
+                                    if self.kc_region.exists(Pattern('fleetcomp_shiplist_ship_substat.png').exact()):
+                                        log_msg("fleetcomp_shiplist_ship_substat")
+                                    if not self.kc_region.exists(Pattern('dmg_light.png').similar(self.dmg_similarity)):
+                                        log_msg("dmg_light")
+                                    if self.kc_region.exists(Pattern('dmg_moderate.png').similar(self.dmg_similarity)):
+                                        log_msg("dmg_moderate")
+                                    if self.kc_region.exists(Pattern('dmg_critical.png').similar(self.dmg_similarity)):
+                                        log_msg("dmg_critical")
+                                    if self.kc_region.exists(Pattern('dmg_repair.png').similar(self.dmg_similarity)):
+                                        log_msg("dmg_repair")
                                     # Submarine is damaged/under repair; click away
                                     log_msg("Submarine not available (or is Taigei), moving on!")
                                     check_and_click(self.kc_region, 'fleetcomp_shiplist_first_page.png')
