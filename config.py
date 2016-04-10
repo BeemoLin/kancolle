@@ -1,9 +1,9 @@
 # encoding: utf-8
 
 #sleep
-_sleep = (3, 5)
+_sleep = (2, 4)
 
-_task_list = ((1, 2), (2, 2), (5, 6))
+_task_list = ((1, 2), (1, 5), (5, 6))
 
 _flag = True
 #click LAG

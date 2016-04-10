@@ -532,7 +532,8 @@ while run_times > 0:
                 quest_reset_skip = False
         if settings['pvp_enabled']:
             now_time = datetime.datetime.now()
-            if now_time > next_pvp_time:
+            #if now_time > next_pvp_time:
+            if True:
                 idle = False
                 pvp_action()
         # If combat timer is up, go do sortie-related stuff

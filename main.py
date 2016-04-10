@@ -164,6 +164,10 @@ def is_handled_by_predefined_func(input_cmd):
 		subprocess.call(['./1-1.sh'], shell=True)
 		print colored("伊401", "green") + colored(" 1-1 ", "yellow") + colored("出撃します！！", "green")
 		return True
+	elif input_cmd == '15':
+		subprocess.call(['./1-5.sh'], shell=True)
+		print colored("伊401", "green") + colored(" 1-5 ", "yellow") + colored("出撃します！！", "green")
+		return True
 	elif input_cmd == '22':
 		subprocess.call(['./2-2.sh'], shell=True)
 		print colored("伊401", "green") + colored(" 2-2 ", "yellow") + colored("出撃します！！", "green")
@@ -195,6 +199,10 @@ def is_handled_by_predefined_func(input_cmd):
 	elif input_cmd == '54rb':
 		subprocess.call(['./5-4-b.sh'], shell=True)
 		print colored("伊401 : ふふーん♪", "green") + colored(" 5-4 Boss ", "yellow") + colored("伊400型の追撃はしつこいんだから！", "green")
+		return True
+	elif input_cmd == '54ss':
+		subprocess.call(['./5-4-b-ss.sh'], shell=True)
+		print colored("伊401 : ふふーん♪", "green") + colored(" 5-4 Boss(ss) ", "yellow") + colored("伊400型の追撃はしつこいんだから！", "green")
 		return True
 	elif input_cmd == 'auto e':
 		_sikuli_auto = False

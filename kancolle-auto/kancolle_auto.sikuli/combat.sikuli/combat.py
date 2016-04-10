@@ -302,7 +302,7 @@ class Combat:
             # If formation select, select formation based on user config
             elif check_and_click(global_regions['formations'], Pattern('formation_%s.png' % self.formations[nodes_run]).similar(0.95)):
                 # Now check for night battle prompt or post-battle report
-                log_msg("Selecting fleet formation!")
+                log_msg("Selecting fleet formation! " + self.formations[nodes_run])
                 sleep(5)
                 mouseDown(Button.LEFT) # In case of boss monologue
                 mouseUp()
