@@ -21,6 +21,9 @@ import config
 #auto combat
 _sikuli_auto = False
 
+#auto combat check ndock
+_ndock_check = False
+
 _flag = True
 # current place
 _place = "port"
@@ -132,6 +135,7 @@ def is_handled_by_predefined_func(input_cmd):
 	global _place
 	global _flag
 	global _sikuli_auto
+	global _ndock_check
 	if input_cmd == "exit":
 		_flag = False
 		print colored("電：お疲れさまでした", "green")
@@ -206,13 +210,25 @@ def is_handled_by_predefined_func(input_cmd):
 		return True
 	elif input_cmd == 'auto e':
 		_sikuli_auto = False
+		_ndock_check = False
 		auto_e()
 		return True
 	elif input_cmd == 'auto c':
+		_ndock_check = False
+		auto_c()
+		return True
+	elif input_cmd == 'auto cd':
+		_ndock_check = True
 		auto_c()
 		return True
 	elif input_cmd == 'auto ec':
 		_sikuli_auto = True
+		_ndock_check = False
+		auto_e()
+		return True
+	elif input_cmd == 'auto ecd':
+		_sikuli_auto = True
+		_ndock_check = True
 		auto_e()
 		return True
 	elif input_cmd == 'game':
@@ -232,8 +248,13 @@ def auto_c():
 	e_flag = True
 	while(e_flag):
 		try:
-			show_msg = colored("電：伊401出撃します！", "green")
-			subprocess.call(['./kancolle-auto/run.sh'], shell=True)
+			if _ndock_check:
+				if ndock_unused(data, 1) and ndock_unused(data, 2) and ndock_unused(data, 3) and ndock_unused(data, 4):
+					show_msg = colored("電：伊401出撃します！", "green")
+					subprocess.call(['./kancolle-auto/run.sh'], shell=True)
+			else:
+				show_msg = colored("電：伊401出撃します！", "green")
+				subprocess.call(['./kancolle-auto/run.sh'], shell=True)
 
 			time.sleep(1)
 		except KeyboardInterrupt:
@@ -297,7 +318,11 @@ def e_task():
 	if come_back_team > 0 and come_back_team_id != -1:
 		expedition_cmd(come_back_team_id, _task_list[come_back_team_id - 1], come_back_team)
 	else:
-		if _sikuli_auto:
+		if _sikuli_auto and _ndock_check:
+			if ndock_unused(data, 1) and ndock_unused(data, 2) and ndock_unused(data, 3) and ndock_unused(data, 4):
+				show_msg = colored("電：伊401出撃します！", "green")
+				subprocess.call(['./kancolle-auto/run.sh'], shell=True)
+		elif _sikuli_auto:
 			show_msg = colored("電：伊401出撃します！", "green")
 			subprocess.call(['./kancolle-auto/run.sh'], shell=True)
 
@@ -344,7 +369,27 @@ def get_flag_ship_fuel(team):
 		print str(team) + "番隊:" + ship_name + colored(" Not refill yet.", "red")
 		return False
 		
-	
+def ndock_unused(data, dock):
+
+	show_msg = colored("舞鶴の温泉 ", "green")
+	for i in range(1, 5):
+		repair_timeout = time.localtime(float(str(data["api_ndock"][i - 1]["api_complete_time"])[0:10]))
+		if repair_timeout < time.localtime():
+			show_msg += "第" + colored(str(i), "yellow") + "風呂:"
+			show_msg += colored(" 使える ", "green")
+		else:
+			show_msg += "第" + colored(str(i), "yellow") + "風呂:"
+			show_msg += time.strftime("(%a)%H:%M", repair_timeout)
+			show_msg += colored(" 前使えない ", "red")
+
+	print_oneline(show_msg)
+
+	repair_timeout = time.localtime(float(str(data["api_ndock"][dock - 1]["api_complete_time"])[0:10]))
+
+	if repair_timeout < time.localtime():
+		return True
+	else:
+		return False
 
 def expedition_status(data, team):
 	global _delay_task
