@@ -403,17 +403,22 @@ def expedition_status(data, team):
 		return False
 
 def expedition_msg(data, team):
-	team_data = str(data["api_deck_port"][team]["api_mission"][2])[0:10]
-	team_delay = "-" + str(_delay_task[team - 1]) + "s "
-	team_time = time.strftime("(%a)%H:%M", time.localtime(float(team_data) + _delay_task[team - 1]))
-	show_msg = colored(str(team + 1) + "番隊:", "green")
-	
-	if time.localtime(float(team_data) - 300) > (time.localtime()):
-		show_msg += colored(team_time, "cyan") + team_delay
-	elif time.localtime(float(team_data)) > (time.localtime(time.time())):
-		show_msg += colored(team_time, "magenta") + team_delay
+	show_msg = ""
+	if len(data["api_deck_port"]) > team:
+		team_data = str(data["api_deck_port"][team]["api_mission"][2])[0:10]
+		team_delay = "-" + str(_delay_task[team - 1]) + "s "
+		team_time = time.strftime("(%a)%H:%M", time.localtime(float(team_data) + _delay_task[team - 1]))
+		show_msg += colored(str(team + 1) + "番隊:", "green")
+		
+		if time.localtime(float(team_data) - 300) > (time.localtime()):
+			show_msg += colored(team_time, "cyan") + team_delay
+		elif time.localtime(float(team_data)) > (time.localtime(time.time())):
+			show_msg += colored(team_time, "magenta") + team_delay
+		else:
+			show_msg += colored(team_time, "red") + team_delay
 	else:
-		show_msg += colored(team_time, "red") + team_delay
+		show_msg += colored(str(team + 1) + "番隊:", "green")
+		show_msg += colored("使えられない", "red")
 
 	return show_msg
 
