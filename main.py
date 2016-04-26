@@ -30,18 +30,8 @@ _place = "port"
 
 #click LAG
 _LAG = config._LAG
-#_task_list = ((海域, 任務), (海域, 任務), (海域, 任務))
-#_task_list = ("", (1, 2), (2, 5))
-# 鋁 6 15 35 36
-# 20~40MIN:[3]LV3 3SS [6鋁]LV4 4SS or DD
-# 1~2HR:[5]LV3 1輕 2DD 1SS [21]LV15+30 1輕 5DD 4罐 [37]LV50+200 1輕 5DD 5罐
-# 1~2HR:[38]LV65+240 1輕 5DD 10罐 [20 開發]LV1 1SS 1輕
-# 6~9HR:[36]LV30 2水母 1輕 1DD 2SS [19]LV20 2航戰 2DD 2SS
-#常態任務
-#_task_list = ((5, 4), (3, 5), (5, 5))
-#高速任務
-#_task_list = ((1, 6), (3, 5), (5, 6))
-#_task_list = ((1, 5), (3, 5), (5, 5))
+
+#expedition_task
 _task_list = config._task_list
 
 #sleep
@@ -180,6 +170,10 @@ def is_handled_by_predefined_func(input_cmd):
 		subprocess.call(['./2-3.sh'], shell=True)
 		print colored("伊401", "green") + colored(" 2-3 ", "yellow") + colored("出撃します！！", "green")
 		return True
+	elif input_cmd == '25':
+		subprocess.call(['./2-5.sh'], shell=True)
+		print colored("伊401", "green") + colored(" 2-5 ", "yellow") + colored("出撃します！！", "green")
+		return True
 	elif input_cmd == '321':
 		subprocess.call(['./3-2.sh'], shell=True)
 		print colored("伊401", "green") + colored(" 3-2-A ", "yellow") + colored("出撃します！！", "green")
@@ -191,6 +185,10 @@ def is_handled_by_predefined_func(input_cmd):
 	elif input_cmd == '54':
 		subprocess.call(['./5-4.sh'], shell=True)
 		print colored("伊401", "green") + colored(" 5-4-A ", "yellow") + colored("出撃します！！", "green")
+		return True
+	elif input_cmd == '54ss':
+		subprocess.call(['./5-4-b-ss.sh'], shell=True)
+		print colored("伊401", "green") + colored(" 5-4 Boss(ss) ", "yellow") + colored("出撃します！！", "green")
 		return True
 	elif input_cmd == '321r':
 		subprocess.call(['./r3-2.sh'], shell=True)
@@ -204,8 +202,8 @@ def is_handled_by_predefined_func(input_cmd):
 		subprocess.call(['./5-4-b.sh'], shell=True)
 		print colored("伊401 : ふふーん♪", "green") + colored(" 5-4 Boss ", "yellow") + colored("伊400型の追撃はしつこいんだから！", "green")
 		return True
-	elif input_cmd == '54ss':
-		subprocess.call(['./5-4-b-ss.sh'], shell=True)
+	elif input_cmd == '54rss':
+		subprocess.call(['./5-4-b-rss.sh'], shell=True)
 		print colored("伊401 : ふふーん♪", "green") + colored(" 5-4 Boss(ss) ", "yellow") + colored("伊400型の追撃はしつこいんだから！", "green")
 		return True
 	elif input_cmd == 'auto e':
@@ -249,7 +247,7 @@ def auto_c():
 	while(e_flag):
 		try:
 			if _ndock_check:
-				if ndock_unused(data, 1) and ndock_unused(data, 2) and ndock_unused(data, 3) and ndock_unused(data, 4):
+				if ndock_unused(data, 1) or ndock_unused(data, 2) or ndock_unused(data, 3) or ndock_unused(data, 4):
 					show_msg = colored("電：伊401出撃します！", "green")
 					subprocess.call(['./kancolle-auto/run.sh'], shell=True)
 			else:
@@ -268,7 +266,7 @@ def auto_e():
 			now_time = time.strftime("(%a)%X", time.localtime())
 			now_hour = datetime.datetime.now().hour
 			
-			if(now_hour > _sleep[0] and now_hour <= _sleep[1]):
+			if(now_hour > _sleep[0] and now_hour < _sleep[1]):
 				show_msg = colored("電：自動遠征は休憩中です ", "green")
 				show_msg += colored(_sleep[1], "yellow") + colored("時に続きます ", "green")
 				show_msg += colored("今:", "green") + colored(now_time, "yellow")
@@ -319,7 +317,7 @@ def e_task():
 		expedition_cmd(come_back_team_id, _task_list[come_back_team_id - 1], come_back_team)
 	else:
 		if _sikuli_auto and _ndock_check:
-			if ndock_unused(data, 1) and ndock_unused(data, 2) and ndock_unused(data, 3) and ndock_unused(data, 4):
+			if ndock_unused(data, 1) or ndock_unused(data, 2) or ndock_unused(data, 3) or ndock_unused(data, 4):
 				show_msg = colored("電：伊401出撃します！", "green")
 				subprocess.call(['./kancolle-auto/run.sh'], shell=True)
 		elif _sikuli_auto:

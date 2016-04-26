@@ -3,7 +3,7 @@
 #sleep
 _sleep = (2, 4)
 
-_task_list = ((1, 2), (1, 4), (5, 6))
+_task_list = ((1, 2), (1, 6), (5, 6))
 
 _flag = True
 #click LAG
@@ -30,4 +30,4 @@ _delay_task = [0, 0, 0]
 # current place
 _place = "port"
 #screen offset
-_offset = (6, 35)
+_offset = (6, 25)
