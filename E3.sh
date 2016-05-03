@@ -1,3 +1,3 @@
 #!/bin/sh
 
-cp ./kancolle-auto/2-4-config.ini ./kancolle-auto/config.ini
+cp ./kancolle-auto/E3-config.ini ./kancolle-auto/config.ini

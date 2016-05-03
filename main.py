@@ -150,6 +150,13 @@ def is_handled_by_predefined_func(input_cmd):
 	elif input_cmd == '?':
 		print current_status()
 		return True
+
+	#event spring 2016
+	elif input_cmd == 'e3':
+		subprocess.call(['./E3.sh'], shell=True)
+		print colored("伊401 : ふふーん♪", "green") + colored(" E3 ", "yellow") + colored("伊400型の追撃はしつこいんだから！", "green")
+		return True
+
 	elif input_cmd == 'pvp':
 		subprocess.call(['./pvp.sh'], shell=True)
 		print colored("伊401", "green") + colored(" pvp ", "yellow") + colored("出撃します！！", "green")
