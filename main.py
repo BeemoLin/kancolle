@@ -258,7 +258,7 @@ def auto_c():
 	while(e_flag):
 		try:
 			if _ndock_check:
-				if ndock_unused(data, 1) or ndock_unused(data, 2) or ndock_unused(data, 3) or ndock_unused(data, 4):
+				if ndock_unused(data, 1) and ndock_unused(data, 2) and ndock_unused(data, 3) and ndock_unused(data, 4):
 					show_msg = colored("電：伊401出撃します！", "green")
 					subprocess.call(['./kancolle-auto/run.sh'], shell=True)
 			else:
@@ -328,7 +328,7 @@ def e_task():
 		expedition_cmd(come_back_team_id, _task_list[come_back_team_id - 1], come_back_team)
 	else:
 		if _sikuli_auto and _ndock_check:
-			if ndock_unused(data, 1) or ndock_unused(data, 2) or ndock_unused(data, 3) or ndock_unused(data, 4):
+			if ndock_unused(data, 1) and ndock_unused(data, 2) and ndock_unused(data, 3) and ndock_unused(data, 4):
 				show_msg = colored("電：伊401出撃します！", "green")
 				subprocess.call(['./kancolle-auto/run.sh'], shell=True)
 		elif _sikuli_auto:
