@@ -28,6 +28,9 @@ _flag = True
 # current place
 _place = "port"
 
+#check ndock type
+_check_type = "all"
+
 #click LAG
 _LAG = config._LAG
 
@@ -126,6 +129,7 @@ def is_handled_by_predefined_func(input_cmd):
 	global _flag
 	global _sikuli_auto
 	global _ndock_check
+	global _check_type
 	if input_cmd == "exit":
 		_flag = False
 		print colored("電：お疲れさまでした", "green")
@@ -151,10 +155,24 @@ def is_handled_by_predefined_func(input_cmd):
 		print current_status()
 		return True
 
+	elif input_cmd == 'dock all':
+		_check_type = "all"
+		print colored("明石 : あまり得意じゃないんだけど！", "green") 
+		return True
+
+	elif input_cmd == 'dock one':
+		_check_type = "one"
+		print colored("明石 : これは……はかどります！", "green") 
+		return True
+
 	#event spring 2016
 	elif input_cmd == 'ee3':
 		subprocess.call(['./E3.sh'], shell=True)
 		print colored("伊401 : ふふーん♪", "green") + colored(" E3 ", "yellow") + colored("伊400型の追撃はしつこいんだから！", "green")
+		return True
+	elif input_cmd == 'ere3':
+		subprocess.call(['./rE3.sh'], shell=True)
+		print colored("伊401 : ふふーん♪", "green") + colored(" rE3 ", "yellow") + colored("伊400型の追撃はしつこいんだから！", "green")
 		return True
 
 	elif input_cmd == 'pvp':
@@ -258,7 +276,7 @@ def auto_c():
 	while(e_flag):
 		try:
 			if _ndock_check:
-				if ndock_unused(data, 1) and ndock_unused(data, 2) and ndock_unused(data, 3) and ndock_unused(data, 4):
+				if ndocks_status(data):
 					show_msg = colored("電：伊401出撃します！", "green")
 					subprocess.call(['./kancolle-auto/run.sh'], shell=True)
 			else:
@@ -328,7 +346,7 @@ def e_task():
 		expedition_cmd(come_back_team_id, _task_list[come_back_team_id - 1], come_back_team)
 	else:
 		if _sikuli_auto and _ndock_check:
-			if ndock_unused(data, 1) and ndock_unused(data, 2) and ndock_unused(data, 3) and ndock_unused(data, 4):
+			if ndocks_status(data):
 				show_msg = colored("電：伊401出撃します！", "green")
 				subprocess.call(['./kancolle-auto/run.sh'], shell=True)
 		elif _sikuli_auto:
@@ -399,6 +417,18 @@ def ndock_unused(data, dock):
 		return True
 	else:
 		return False
+
+def ndocks_status(data):
+	if _check_type == "all":
+		if ndock_unused(data, 1) and ndock_unused(data, 2) and ndock_unused(data, 3) and ndock_unused(data, 4):
+			return True
+		else:
+			return False
+	if _check_type == "one":
+		if ndock_unused(data, 1) or ndock_unused(data, 2) or ndock_unused(data, 3) or ndock_unused(data, 4):
+			return True
+		else:
+			return False
 
 def expedition_status(data, team):
 	global _delay_task
