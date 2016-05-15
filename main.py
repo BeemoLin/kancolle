@@ -419,12 +419,12 @@ def ndock_unused(data, dock):
 		return False
 
 def ndocks_status(data):
-	if _check_type == "all":
+	if _check_type == "one":
 		if ndock_unused(data, 1) and ndock_unused(data, 2) and ndock_unused(data, 3) and ndock_unused(data, 4):
 			return True
 		else:
 			return False
-	if _check_type == "one":
+	if _check_type == "all":
 		if ndock_unused(data, 1) or ndock_unused(data, 2) or ndock_unused(data, 3) or ndock_unused(data, 4):
 			return True
 		else:
