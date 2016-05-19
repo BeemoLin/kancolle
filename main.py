@@ -166,6 +166,10 @@ def is_handled_by_predefined_func(input_cmd):
 		return True
 
 	#event spring 2016
+	elif input_cmd == 'ee1':
+		subprocess.call(['./E1.sh'], shell=True)
+		print colored("伊401 : ふふーん♪", "green") + colored(" E1 I ", "yellow") + colored("伊400型の追撃はしつこいんだから！", "green")
+		return True
 	elif input_cmd == 'ee3':
 		subprocess.call(['./E3.sh'], shell=True)
 		print colored("伊401 : ふふーん♪", "green") + colored(" E3 ", "yellow") + colored("伊400型の追撃はしつこいんだから！", "green")

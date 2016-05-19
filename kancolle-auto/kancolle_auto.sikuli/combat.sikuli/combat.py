@@ -463,7 +463,7 @@ class Combat:
                                 # We're not seeing any more submarines in the shiplist...
                                 log_warning("No more submarines!")
                                 return False
-                        if self.kc_region.exists('fleetcomp_shiplist_submarine_available.png'):
+                        if self.kc_region.exists(Pattern('fleetcomp_shiplist_submarine_available.png').similar(0.9)):
                             log_msg("We are seeing available submarines!")
                             for sub in self.kc_region.findAll(Pattern('fleetcomp_shiplist_submarine_available.png').similar(0.9)):
                                 self.kc_region.click(sub)
