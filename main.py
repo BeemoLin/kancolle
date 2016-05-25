@@ -21,6 +21,9 @@ import config
 #auto combat
 _sikuli_auto = False
 
+#auto check fatigue
+_fatigue_check = False
+
 #auto combat check ndock
 _ndock_check = False
 
@@ -82,7 +85,7 @@ def expedition_cmd(team, (area, no), come_back_team):
 	auto_cmd("go")
 	auto_cmd("home")
 	for r in range(come_back_team, 0, -1):
-		for j in range(7, 0, -1):
+		for j in range(5, 0, -1):
 			auto_cmd("poi")
 		auto_cmd("place p")
 		auto_cmd("poi")
@@ -129,6 +132,7 @@ def is_handled_by_predefined_func(input_cmd):
 	global _flag
 	global _sikuli_auto
 	global _ndock_check
+	global _fatigue_check
 	global _check_type
 	if input_cmd == "exit":
 		_flag = False
@@ -165,6 +169,16 @@ def is_handled_by_predefined_func(input_cmd):
 		print colored("明石 : これは……はかどります！", "green") 
 		return True
 
+	#switch submarine
+	elif input_cmd == 'ss':
+		subprocess.call(['./submarine.sh'], shell=True)
+		print colored(" 潜水艦 ", "yellow") + colored("出撃します！！", "green")
+		return True
+	elif input_cmd == 'ssv':
+		subprocess.call(['./submarine_air.sh'], shell=True)
+		print colored(" 潜水空母 ", "yellow") + colored("出撃します！！", "green")
+		return True
+
 	#event spring 2016
 	elif input_cmd == 'ee1':
 		subprocess.call(['./E1.sh'], shell=True)
@@ -177,6 +191,10 @@ def is_handled_by_predefined_func(input_cmd):
 	elif input_cmd == 'ere3':
 		subprocess.call(['./rE3.sh'], shell=True)
 		print colored("伊401 : ふふーん♪", "green") + colored(" rE3 ", "yellow") + colored("伊400型の追撃はしつこいんだから！", "green")
+		return True
+	elif input_cmd == 'ee5':
+		subprocess.call(['./E5.sh'], shell=True)
+		print colored("伊401 : ふふーん♪", "green") + colored(" E5 ", "yellow") + colored("伊400型の追撃はしつこいんだから！", "green")
 		return True
 
 	elif input_cmd == 'pvp':
@@ -248,8 +266,18 @@ def is_handled_by_predefined_func(input_cmd):
 		_ndock_check = False
 		auto_c()
 		return True
+	elif input_cmd == 'auto cf':
+		_ndock_check = False
+		_fatigue_check = True
+		auto_c()
+		return True
 	elif input_cmd == 'auto cd':
 		_ndock_check = True
+		auto_c()
+		return True
+	elif input_cmd == 'auto cfd':
+		_ndock_check = True
+		_fatigue_check = True
 		auto_c()
 		return True
 	elif input_cmd == 'auto ec':
@@ -257,9 +285,21 @@ def is_handled_by_predefined_func(input_cmd):
 		_ndock_check = False
 		auto_e()
 		return True
+	elif input_cmd == 'auto ecf':
+		_sikuli_auto = True
+		_ndock_check = False
+		_fatigue_check = True
+		auto_e()
+		return True
 	elif input_cmd == 'auto ecd':
 		_sikuli_auto = True
 		_ndock_check = True
+		auto_e()
+		return True
+	elif input_cmd == 'auto':# full command
+		_sikuli_auto = True
+		_ndock_check = True
+		_fatigue_check = True
 		auto_e()
 		return True
 	elif input_cmd == 'game':
@@ -279,18 +319,26 @@ def auto_c():
 	e_flag = True
 	while(e_flag):
 		try:
-			if _ndock_check:
-				if ndocks_status(data):
-					show_msg = colored("電：伊401出撃します！", "green")
-					subprocess.call(['./kancolle-auto/run.sh'], shell=True)
-			else:
-				show_msg = colored("電：伊401出撃します！", "green")
-				subprocess.call(['./kancolle-auto/run.sh'], shell=True)
-
-			time.sleep(1)
+			combat()
 		except KeyboardInterrupt:
 			print colored("\n自動出撃が中断されました", "red")
 			e_flag = False
+
+def combat():
+	ndock_check = True
+	fatigue_check = True
+	
+	if _ndock_check:
+		kantai_status = ndocks_status(data)
+
+	if _fatigue_check:
+		fatigue_check = get_kantai_cond(0)
+
+
+	if ndock_check and fatigue_check:
+		show_msg = colored("電：伊401出撃します！", "green")
+		subprocess.call(['./kancolle-auto/run.sh'], shell=True)
+	time.sleep(1)
 
 def auto_e():
 	e_flag = True
@@ -349,13 +397,8 @@ def e_task():
 	if come_back_team > 0 and come_back_team_id != -1:
 		expedition_cmd(come_back_team_id, _task_list[come_back_team_id - 1], come_back_team)
 	else:
-		if _sikuli_auto and _ndock_check:
-			if ndocks_status(data):
-				show_msg = colored("電：伊401出撃します！", "green")
-				subprocess.call(['./kancolle-auto/run.sh'], shell=True)
-		elif _sikuli_auto:
-			show_msg = colored("電：伊401出撃します！", "green")
-			subprocess.call(['./kancolle-auto/run.sh'], shell=True)
+		if _sikuli_auto:
+			combat()
 
 def print_oneline(print_msg):
 	sys.stdout.write("\r{}".format(print_msg))
@@ -399,7 +442,30 @@ def get_flag_ship_fuel(team):
 	else:
 		print str(team) + "番隊:" + ship_name + colored(" Not refill yet.", "red")
 		return False
-		
+	
+def get_kantai_cond(team):
+	file_path = "../poi/cache/PORT.json"
+	data = read_port(file_path)
+	update_time = os.path.getmtime(file_path)
+	knatai = data["api_deck_port"][team]["api_ship"]
+	ships = data["api_ship"]
+	ship_current_cond = -1
+	for knatai_ship in knatai:
+		for ship in ships:
+			if str(ship["api_id"]) == str(knatai_ship):
+				temp_cond = 41 - ship["api_cond"]
+				if temp_cond > ship_current_cond:
+					ship_current_cond = temp_cond
+
+	refill_cond_time = update_time + ship_current_cond * 1 * 60
+
+	if ship_current_cond <= 0 or time.time() > refill_cond_time:
+		print str(team) + "番隊:"  + colored(" cond good.", "green")
+		return True
+	else:
+		print str(team) + "番隊:" + colored(" cond refill time : " + time.strftime("(%a)%H:%M", time.localtime(refill_cond_time)), "yellow")
+		return False
+
 def ndock_unused(data, dock):
 
 	show_msg = colored("舞鶴の温泉 ", "green")
