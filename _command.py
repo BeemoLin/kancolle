@@ -5,7 +5,7 @@ def get_port():
 	cmd = {}
 	cmd['port'] = dict()
 	#cmd['refill']['f1'] = ("cmd content", blur, (click x, click y))
-	cmd['port']['home'] = ("司令、しっかり食べてるか？", (73, 250), (3, 5))
+	cmd['port']['home'] = ("司令、しっかり食べてるか？", (30, 30), (3, 5))
 	cmd['port']['go'] = ("第十七驅逐艦隊磯風，參上！", (195, 263), (40, 40))
 	cmd['port']['ok'] = ("選擇遠征", (678, 444), (3, 3))
 	cmd['port']['poi'] = ("どうした。", (350, 282), (3, 3))

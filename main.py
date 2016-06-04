@@ -84,18 +84,21 @@ def expedition_cmd(team, (area, no), come_back_team):
 	auto_cmd("poi")
 	auto_cmd("go")
 	auto_cmd("home")
+	auto_cmd("poi")
 	for r in range(come_back_team, 0, -1):
-		for j in range(5, 0, -1):
+		for j in range(3, 0, -1):
 			auto_cmd("poi")
 		auto_cmd("place p")
 		auto_cmd("poi")
 		auto_cmd("go")
 		auto_cmd("home")
+		auto_cmd("poi")
 	
 	#refill
 	if get_flag_ship_fuel(team) == False:
 		auto_cmd("place p")
 		auto_cmd("home")
+		auto_cmd("poi")
 		u._sleep(2.0)
 		auto_cmd("go")
 		auto_cmd("place r")
@@ -104,6 +107,7 @@ def expedition_cmd(team, (area, no), come_back_team):
 		auto_cmd("all")
 		auto_cmd("place p")
 		auto_cmd("home")
+		auto_cmd("poi")
 		u._sleep(2.0)
 	
 	#expedition
@@ -121,9 +125,6 @@ def expedition_cmd(team, (area, no), come_back_team):
 	#back home
 	u._sleep(1.0)
 	auto_cmd("place p")
-	auto_cmd("home")
-	auto_cmd("go")
-	u._sleep(2.0)
 	auto_cmd("home")
 	auto_cmd("poi")
 
@@ -233,6 +234,10 @@ def is_handled_by_predefined_func(input_cmd):
 		subprocess.call(['./3-3.sh'], shell=True)
 		print colored("伊401", "green") + colored(" 3-3 ", "yellow") + colored("出撃します！！", "green")
 		return True
+	elif input_cmd == '52rb':
+		subprocess.call(['./5-2-b.sh'], shell=True)
+		print colored("伊401 : ふふーん♪", "green") + colored(" 5-2 Boss ", "yellow") + colored("伊400型の追撃はしつこいんだから！", "green")
+		return True
 	elif input_cmd == '54':
 		subprocess.call(['./5-4.sh'], shell=True)
 		print colored("伊401", "green") + colored(" 5-4-A ", "yellow") + colored("出撃します！！", "green")
@@ -260,10 +265,12 @@ def is_handled_by_predefined_func(input_cmd):
 	elif input_cmd == 'auto e':
 		_sikuli_auto = False
 		_ndock_check = False
+		_fatigue_check = False
 		auto_e()
 		return True
 	elif input_cmd == 'auto c':
 		_ndock_check = False
+		_fatigue_check = False
 		auto_c()
 		return True
 	elif input_cmd == 'auto cf':
@@ -273,6 +280,7 @@ def is_handled_by_predefined_func(input_cmd):
 		return True
 	elif input_cmd == 'auto cd':
 		_ndock_check = True
+		_fatigue_check = False
 		auto_c()
 		return True
 	elif input_cmd == 'auto cfd':
@@ -283,6 +291,7 @@ def is_handled_by_predefined_func(input_cmd):
 	elif input_cmd == 'auto ec':
 		_sikuli_auto = True
 		_ndock_check = False
+		_fatigue_check = False
 		auto_e()
 		return True
 	elif input_cmd == 'auto ecf':
@@ -294,6 +303,7 @@ def is_handled_by_predefined_func(input_cmd):
 	elif input_cmd == 'auto ecd':
 		_sikuli_auto = True
 		_ndock_check = True
+		_fatigue_check = False
 		auto_e()
 		return True
 	elif input_cmd == 'auto':# full command

@@ -29,6 +29,9 @@ next_sleep_time = None
 next_pvp_time = None
 idle = False
 last_refresh = ''
+done_expeditions = 0
+done_sorties = 0
+done_pvp = 0
 
 # Focus on the defined KanColle app
 def focus_window():
@@ -73,7 +76,7 @@ def go_home(refresh=False):
             resupply()
         elif refresh:
             # We're at home, but if we're due for a refresh, refresh
-            rnavigation(global_regions['game'], 'refresh_home')
+            rnavigation(global_regions['game'], 'refresh_home', 0)
             # Check for completed expeditions. Resupply them if there are.
             if check_expedition():
                 resupply()
@@ -87,7 +90,7 @@ def go_home(refresh=False):
 # Check expedition arrival flag on home screen; ultimately return True if there
 # was at least one expedition received.
 def check_expedition():
-    global kc_window, expedition_item, quest_item, fleet_needs_resupply, settings
+    global kc_window, expedition_item, quest_item, fleet_needs_resupply, done_expeditions, settings
     log_msg("Are there returning expeditions to receive?")
     if check_and_click(global_regions['expedition_flag'], 'expedition_finish.png', expand_areas('expedition_finish')):
         wait_and_click(global_regions['next'], 'next.png', WAITLONG, expand_areas('next'))
@@ -104,6 +107,7 @@ def check_expedition():
         # Let the Quests module know, if it's enabled
         if settings['quests_enabled'] == True:
             quest_item.done_expeditions += 1
+        done_expeditions += 1
         while not global_regions['game'].exists('menu_main_sortie.png'):
             check_and_click(global_regions['next'], 'next.png', expand_areas('next'))
             rejigger_mouse(kc_window, 370, 770, 100, 400)
@@ -126,10 +130,12 @@ def resupply():
             if returned:
                 # If not resupplying the first fleet, navigate to correct fleet
                 if fleet_id != 0:
-                    fleet_name = 'fleet_%d.png' % (fleet_id + 1)
-                    global_regions['fleet_flags_main'].click(pattern_generator(global_regions['fleet_flags_main'], fleet_name))
-                    sleep_fast()
-                check_and_click(global_regions['fleet_flags_main'], pattern_generator(global_regions['fleet_flags_main'], Pattern('resupply_all.png').exact()))
+                    fleet_flag = 'fleet_%d.png' % (fleet_id + 1)
+                    fleet_flag_selected = 'fleet_%ds.png' % (fleet_id + 1)
+                    while not global_regions['fleet_flags_main'].exists(Pattern(fleet_flag_selected).similar(0.95)):
+                        global_regions['fleet_flags_main'].click(pattern_generator(global_regions['fleet_flags_main'], fleet_flag, expand_areas('fleet_id')))
+                        sleep_fast()
+                check_and_click(global_regions['fleet_flags_main'], pattern_generator(global_regions['fleet_flags_main'], Pattern('resupply_all.png').exact()), expand_areas('fleet_id'))
                 sleep_fast()
         log_success("Done resupplying!")
     else:
@@ -168,7 +174,7 @@ def expedition_action(fleet_id):
 
 # Actions involved in conducting PvPs
 def pvp_action():
-    global pvp_item, settings
+    global pvp_item, done_pvp, settings
     reset_next_pvp_time(True)
     # Switch fleet comp, if necessary
     fleetcomp_switch_action(settings['pvp_fleetcomp'])
@@ -177,6 +183,7 @@ def pvp_action():
     go_home()
     rnavigation(global_regions['game'], 'pvp', 2)
     while pvp_item.go_pvp():
+        done_pvp += 1
         fleet_needs_resupply[0] = True
         go_home()
         resupply()
@@ -194,9 +201,9 @@ def pvp_action():
 def sortie_action():
     global fleet_needs_resupply, combat_item, settings
     fleetcomp_switch_action(settings['combat_fleetcomp'])
-    go_home()
     if settings['expeditions_enabled']:
         expedition_action_wrapper()
+    go_home(True)
     rnavigation(global_regions['game'], 'combat', 2)
     if combat_item.go_sortie():
         fleet_needs_resupply[0] = True
@@ -204,12 +211,8 @@ def sortie_action():
             fleet_needs_resupply[1] = True
         # Check home, repair if needed, and resupply
         go_home()
-        log_success(str(combat_item.count_damage_above_limit('repair')))
         if combat_item.count_damage_above_limit('repair') > 0:
             combat_item.go_repair()
-        if settings['submarine_switch']:
-                combat_item.switch_sub()
-                log_msg("Attempting to switch out submarines!")
         resupply()
         fleet_needs_resupply[0] = False
         if settings['combined_fleet']:
@@ -267,7 +270,7 @@ def reset_next_sleep_time(next_day = False):
 
 # Display upcoming timers
 def display_timers():
-    global expedition_item, combat_item, next_pvp_time, next_sleep_time, settings
+    global expedition_item, combat_item, next_pvp_time, next_sleep_time, done_expeditions, done_sorties, done_pvp, settings
     log_success("-----")
     if settings['expeditions_enabled']:
         temp_time = ''
@@ -277,11 +280,11 @@ def display_timers():
             else:
                 if expedition.end_time < temp_time:
                     temp_time = expedition.end_time
-        log_success("Next expedition action at %s" % temp_time.strftime("%Y-%m-%d %H:%M:%S"))
+        log_success("Next expedition at %s (~%s expeditions conducted)" % (temp_time.strftime("%Y-%m-%d %H:%M:%S"), done_expeditions))
     if settings['combat_enabled']:
-        log_success("Next combat action at %s" % combat_item.next_sortie_time.strftime("%Y-%m-%d %H:%M:%S"))
+        log_success("Next sortie at %s (~%s sorties conducted)" % (combat_item.next_sortie_time.strftime("%Y-%m-%d %H:%M:%S"), done_sorties))
     if settings['pvp_enabled']:
-        log_success("Next PvP action at %s" % next_pvp_time.strftime("%Y-%m-%d %H:%M:%S"))
+        log_success("Next PvP at %s (~%s PvPs conducted)" % (next_pvp_time.strftime("%Y-%m-%d %H:%M:%S"), done_pvp))
     if settings['scheduled_sleep_enabled']:
         log_success("Next scheduled sleep at %s" % next_sleep_time.strftime("%Y-%m-%d %H:%M:%S"))
     log_success("-----")
@@ -339,13 +342,23 @@ def get_config():
             settings['expedition_id_fleet_map'].pop(2, None)
             # Disable PvP if combined fleet is enabled
             settings['pvp_enabled'] = False
+            settings_check_valid_formations = ['combinedfleet_1', 'combinedfleet_2', 'combinedfleet_3', 'combinedfleet_4']
+            settings_check_filler_formation = 'combinedfleet_4'
+        else:
+            settings_check_valid_formations = ['line_ahead', 'double_line', 'diamond', 'echelon', 'line_abreast', ]
+            settings_check_filler_formation = 'line_ahead'
         settings['nodes'] = config.getint('Combat', 'Nodes')
         settings['node_selects'] = config.get('Combat', 'NodeSelects').replace(' ', '').split(',')
         if '' in settings['node_selects']:
             settings['node_selects'].remove('')
         settings['formations'] = config.get('Combat', 'Formations').replace(' ', '').split(',')
+        # Check that supplied formations are valid
+        for formation in settings['formations']:
+            if formation not in settings_check_valid_formations:
+                log_error("'%s' is not a valid formation! Please check your config file." % formation)
+                exit()
         if len(settings['formations']) < settings['nodes']:
-            settings['formations'].extend(['line_ahead'] * (settings['nodes'] - len(settings['formations'])))
+            settings['formations'].extend([settings_check_filler_formation] * (settings['nodes'] - len(settings['formations'])))
         settings['night_battles'] = config.get('Combat', 'NightBattles').replace(' ', '').split(',')
         if len(settings['night_battles']) < settings['nodes']:
             settings['night_battles'].extend(['True'] * (settings['nodes'] - len(settings['night_battles'])))
@@ -418,7 +431,7 @@ def refresh_kancolle(e):
         raise
 
 def init():
-    global fleet_needs_resupply, current_fleetcomp, quest_item, expedition_item, combat_item, pvp_item, fleetcomp_switcher, default_quest_mode, settings
+    global fleet_needs_resupply, current_fleetcomp, quest_item, expedition_item, combat_item, pvp_item, fleetcomp_switcher, default_quest_mode, done_sorties, settings
     get_config()
     get_util_config()
     log_success("Starting kancolle_auto")
@@ -482,6 +495,7 @@ def init():
             # Let the Quests module know, if it's enabled
             if settings['quests_enabled']:
                 quest_item.done_sorties += 1
+            done_sorties += 1
         display_timers()
     except FindFailed, e:
         refresh_kancolle(e)
@@ -489,7 +503,7 @@ def init():
 # initialize kancolle_auto
 init()
 log_msg("Initial checks and commands complete. Starting loop.")
-log_msg("BeemoLin")
+#BeemoLin
 run_times = 0
 while run_times > 0:
     run_times -= 1
@@ -531,9 +545,7 @@ while run_times > 0:
             if jst_convert(now_time).hour == 6 and quest_reset_skip is True:
                 quest_reset_skip = False
         if settings['pvp_enabled']:
-            now_time = datetime.datetime.now()
-            #if now_time > next_pvp_time:
-            if True:
+            if now_time > next_pvp_time:
                 idle = False
                 pvp_action()
         # If combat timer is up, go do sortie-related stuff
@@ -549,6 +561,7 @@ while run_times > 0:
                 # Let the Quests module know, if it's enabled
                 if settings['quests_enabled']:
                     quest_item.done_sorties += 1
+                done_sorties += 1
         if settings['quests_enabled']:
             if not idle:
                 # Expedition or Combat event occured. Loop 'increases'

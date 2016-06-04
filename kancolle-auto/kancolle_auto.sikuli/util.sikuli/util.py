@@ -119,7 +119,6 @@ def rejigger_mouse(kc_window, x1, x2, y1, y2, find_position=False):
         util_settings['screen_x'] = temp_screen.width
         util_settings['screen_y'] = temp_screen.height
     if find_position:
-        #temp_game = kc_window.getLastMatch()
         temp_game = kc_window.find(Pattern('menu_main_home.png').exact())
         # Define upper-left corner of game screen
         util_settings['game_x'] = temp_game.x - 99
@@ -134,7 +133,15 @@ def rejigger_mouse(kc_window, x1, x2, y1, y2, find_position=False):
         global_regions['check_morale'] = Region(util_settings['game_x'] + 500, util_settings['game_y'] + 135, 22, 290)
         global_regions['check_damage'] = Region(util_settings['game_x'] + 460, util_settings['game_y'] + 135, 48, 290)
         global_regions['check_damage_combat'] = Region(util_settings['game_x'] + 290, util_settings['game_y'] + 185, 70, 265)
-        global_regions['formations'] = Region(util_settings['game_x'] + 350, util_settings['game_y'] + 150, 450, 230)
+        global_regions['formation_line_ahead'] = Region(util_settings['game_x'] + 390, util_settings['game_y'] + 160, 120, 50)
+        global_regions['formation_double_line'] = Region(util_settings['game_x'] + 520, util_settings['game_y'] + 160, 120, 50)
+        global_regions['formation_diamond'] = Region(util_settings['game_x'] + 650, util_settings['game_y'] + 160, 120, 50)
+        global_regions['formation_echelon'] = Region(util_settings['game_x'] + 460, util_settings['game_y'] + 320, 120, 50)
+        global_regions['formation_line_abreast'] = Region(util_settings['game_x'] + 590, util_settings['game_y'] + 320, 120, 50)
+        global_regions['formation_combinedfleet_1'] = Region(util_settings['game_x'] + 420, util_settings['game_y'] + 150, 160, 50)
+        global_regions['formation_combinedfleet_2'] = Region(util_settings['game_x'] + 580, util_settings['game_y'] + 150, 160, 50)
+        global_regions['formation_combinedfleet_3'] = Region(util_settings['game_x'] + 420, util_settings['game_y'] + 280, 160, 50)
+        global_regions['formation_combinedfleet_4'] = Region(util_settings['game_x'] + 580, util_settings['game_y'] + 280, 160, 50)
         global_regions['quest_category'] = Region(util_settings['game_x'] + 140, util_settings['game_y'] + 110, 65, 340)
         global_regions['quest_status'] = Region(util_settings['game_x'] + 710, util_settings['game_y'] + 110, 65, 340)
 
@@ -165,6 +172,8 @@ def expand_areas(target):
     """
     if target == 'expedition_finish':
         return [-350, 200, 0, 400]
+    elif target == 'fleet_id':
+        return [-6, 6, -7, 7]
     elif target == 'next':
         return [-600, 0, -400, 0]
     elif target == 'compass':
@@ -181,6 +190,8 @@ def expand_areas(target):
         return [-580, 25, -25, 25]
     elif target == 'pvp_row':
         return [-495, 45, -5, 35]
+    elif target == 'repair_list':
+        return [-325, 35, -10, 6]
 
 def rnavigation(kc_region, destination, max=0):
     """
@@ -391,7 +402,7 @@ def rnavigation(kc_region, destination, max=0):
     while final_target != '':
         # In while loop so that if the button has to be pressed again for some
         # reason, it'll do it. Only works for certain destinations.
-        wait_and_click(kc_region, final_target)
+        wait_and_click(kc_region, final_target, 5)
         sleep(2)
         # Always reset mouse after reaching destination
         rejigger_mouse(kc_region, 50, 500, 0, 100)
@@ -466,7 +477,6 @@ def wait_and_click(kc_region, pic, time=5, expand=[]):
         kc_region.wait(pattern_generator(kc_region, pic, expand), time)
     else:
         kc_region.wait(pattern_generator(kc_region, pic, expand))
-    #kc_region.click(kc_region.getLastMatch())
     kc_region.click(pattern_generator(kc_region, pic, expand))
 
 def pattern_generator(kc_region, pic, expand=[], mod=''):

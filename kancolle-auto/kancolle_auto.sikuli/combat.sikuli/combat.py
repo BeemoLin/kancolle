@@ -150,11 +150,11 @@ class Combat:
             # If combined fleet, check damage and morale on both pages
             if not self.pre_sortie_check():
                 return continue_combat
-            check_and_click(global_regions['fleet_flags_sec'], 'fleet_2.png')
+            check_and_click(global_regions['fleet_flags_sec'], 'fleet_2.png', expand_areas('fleet_id'))
             sleep_fast()
             if not self.pre_sortie_check(True):
                 return continue_combat
-            check_and_click(global_regions['fleet_flags_sec'], 'fleet_1.png')
+            check_and_click(global_regions['fleet_flags_sec'], 'fleet_1.png', expand_areas('fleet_id'))
             sleep_fast()
         else:
             # If not combined fleet, check damage and morale only on Fleet 1
@@ -206,6 +206,7 @@ class Combat:
                         log_success("Medal obtained!")
                         continue_combat = False
                 wait_and_click(global_regions['next'], 'next.png', 30, expand_areas('next'))
+                rejigger_mouse(self.kc_region, 50, 750, 0, 100)
                 sleep(3)
                 if self.combined_fleet:
                     # If combined fleet, click through to the additional post-battle report screen and FCF
@@ -227,11 +228,16 @@ class Combat:
                 # Check to see if we're at combat retreat/continue screen or item/ship reward screen(s)
                 if not self.kc_region.exists('combat_retreat.png'):
                     sleep(3)
-                    if not (self.kc_region.exists('menu_main_sortie.png') or self.kc_region.exists('combat_flagship_dmg.png')):
-                        wait_and_click(global_regions['next'], 'next_alt.png', 20, expand_areas('next'))
-                        sleep(5)
+                    # If we're not at the home screen, the retreat screen, or the flagship retreat screen,
+                    # click through reward(s)
+                    while not (self.kc_region.exists('menu_main_sortie.png')
+                        or self.kc_region.exists('combat_flagship_dmg.png')
+                        or self.kc_region.exists('combat_retreat.png')):
                         if check_and_click(global_regions['next'], 'next_alt.png', expand_areas('next')):
-                            sleep(3)
+                            sleep(1)
+                        if check_and_click(global_regions['next'], 'next.png', expand_areas('next')):
+                            sleep(1)
+                # Check to see if we're at the flagship retreat screen
                 if check_and_click(self.kc_region, 'combat_flagship_dmg.png'):
                     sleep(3)
                 rejigger_mouse(self.kc_region, 370, 770, 100, 400)
@@ -245,6 +251,7 @@ class Combat:
                     return continue_combat
                 # We ran a node, so increase the counter
                 nodes_run += 1
+                rejigger_mouse(self.kc_region, 50, 750, 0, 100)
                 # Set next sortie time to soon in case we have no failures or additional nodes
                 self.next_sortie_time_set(0, 0, 2)
                 # If required number of nodes have been run, fall back
@@ -260,6 +267,7 @@ class Combat:
                     sortie_underway = False
                     return continue_combat
                 sleep(3)
+                log_msg("Continuing on to next node...")
                 wait_and_click(self.kc_region, 'combat_nextnode.png', 30)
         else:
             if self.kc_region.exists('combat_nogo_repair.png'):
@@ -277,13 +285,14 @@ class Combat:
         # Check for compass, formation select, night battle prompt, or post-battle report
         loop_pre_combat_stop = False
         while not loop_pre_combat_stop:
+            sleep_fast()
             # If compass, press it
             if check_and_click(self.kc_region, 'compass.png', expand_areas('compass')):
                 # Rework for new resupply screen
                 self.kc_region.click(self.kc_region.getLastMatch())
                 # Now check for formation select, night battle prompt, or post-battle report
                 log_msg("Spinning compass!")
-                rejigger_mouse(self.kc_region, 50, 350, 0, 150)
+                rejigger_mouse(self.kc_region, 50, 350, 0, 100)
                 # Restart this loop in case there's another compass coming up
                 sleep(3)
                 self.loop_pre_combat(nodes_run)
@@ -295,18 +304,19 @@ class Combat:
                 for node in self.node_selects:
                     check_and_click(self.kc_region, Pattern('%s.png' % node), expand_areas('node_select'))
                 # Assume that the node was selected...
+                rejigger_mouse(self.kc_region, 50, 350, 0, 100)
                 sleep(3)
                 self.loop_pre_combat(nodes_run)
                 loop_pre_combat_stop = True
                 break
             # If formation select, select formation based on user config
-            elif check_and_click(global_regions['formations'], Pattern('formation_%s.png' % self.formations[nodes_run]).similar(0.95)):
+            elif check_and_click(global_regions['formation_%s' % self.formations[nodes_run]], 'formation_%s.png' % self.formations[nodes_run]):
                 # Now check for night battle prompt or post-battle report
-                log_msg("Selecting fleet formation! " + self.formations[nodes_run])
+                log_msg("Selecting fleet formation!")
                 sleep(5)
                 mouseDown(Button.LEFT) # In case of boss monologue
                 mouseUp()
-                rejigger_mouse(self.kc_region, 50, 750, 0, 150)
+                rejigger_mouse(self.kc_region, 50, 350, 0, 100)
                 sleep(5)
                 self.loop_post_formation()
                 loop_pre_combat_stop = True
@@ -352,7 +362,7 @@ class Combat:
             self.next_sortie_time_set()
             log_warning("Cannot repair; docks are full. Checking back at %s!" % self.next_sortie_time.strftime("%Y-%m-%d %H:%M:%S"))
         if empty_docks != 0:
-            log_msg("Attempting to conduct repairs on %d ships!" % self.count_damage_above_limit('repair'))
+            log_msg("Attempting to conduct repairs on %d ship(s)!" % self.count_damage_above_limit('repair'))
             repair_queue = empty_docks if self.count_damage_above_limit('repair') > empty_docks else self.count_damage_above_limit('repair')
             while empty_docks > 0 and repair_queue > 0:
                 log_msg("Available docks: %d; repair queue: %d" % (empty_docks, repair_queue))
@@ -360,19 +370,19 @@ class Combat:
                 wait_and_click(self.kc_region, 'repair_empty.png', 30)
                 sleep(2)
                 log_msg("Check for critically damaged ships.")
-                if check_and_click(self.kc_region, Pattern('repair_dmg_critical.png').similar(0.95)):
+                if check_and_click(self.kc_region, Pattern('repair_dmg_critical.png').similar(0.95), expand_areas('repair_list')):
                     log_success("Starting repair on critically damaged ship!")
                     self.damage_counts[2] -= 1
                     repair_start = True
                 if not repair_start and self.repair_limit <= 1:
                     log_msg("Check for moderately-damaged ships.")
-                    if check_and_click(self.kc_region, Pattern('repair_dmg_moderate.png').similar(0.95)):
+                    if check_and_click(self.kc_region, Pattern('repair_dmg_moderate.png').similar(0.95), expand_areas('repair_list')):
                         log_success("Starting repair on moderately damaged ship!")
                         self.damage_counts[1] -= 1
                         repair_start = True
                 if not repair_start and self.repair_limit == 0:
                     log_msg("Check for lightly-damaged ships.")
-                    if check_and_click(self.kc_region, Pattern('repair_dmg_light.png').similar(0.95)):
+                    if check_and_click(self.kc_region, Pattern('repair_dmg_light.png').similar(0.95), expand_areas('repair_list')):
                         log_success("Starting repair on lightly damaged ship!")
                         self.damage_counts[0] -= 1
                         repair_start = True
@@ -480,18 +490,6 @@ class Combat:
                                     sub_chosen = True
                                     break
                                 else:
-                                    if self.kc_region.exists(Pattern('fleetcomp_shiplist_ship_switch_button.png').exact()):
-                                        log_msg("fleetcomp_shiplist_ship_switch_button")
-                                    if self.kc_region.exists(Pattern('fleetcomp_shiplist_ship_substat.png').exact()):
-                                        log_msg("fleetcomp_shiplist_ship_substat")
-                                    if not self.kc_region.exists(Pattern('dmg_light.png').similar(self.dmg_similarity)):
-                                        log_msg("dmg_light")
-                                    if self.kc_region.exists(Pattern('dmg_moderate.png').similar(self.dmg_similarity)):
-                                        log_msg("dmg_moderate")
-                                    if self.kc_region.exists(Pattern('dmg_critical.png').similar(self.dmg_similarity)):
-                                        log_msg("dmg_critical")
-                                    if self.kc_region.exists(Pattern('dmg_repair.png').similar(self.dmg_similarity)):
-                                        log_msg("dmg_repair")
                                     # Submarine is damaged/under repair; click away
                                     log_msg("Submarine not available (or is Taigei), moving on!")
                                     check_and_click(self.kc_region, 'fleetcomp_shiplist_first_page.png')
@@ -559,9 +557,10 @@ class PvP:
         wait_and_click(self.kc_region, 'pvp_start_1.png', 30)
         wait_and_click(self.kc_region, 'pvp_start_2.png', 30)
         log_msg("Sortieing against PvP opponent!")
-        rejigger_mouse(self.kc_region, 50, 350, 0, 180)
-        wait_and_click(global_regions['formations'], 'formation_line_ahead.png', 30)
-        rejigger_mouse(self.kc_region, 50, 750, 0, 180)
+        rejigger_mouse(self.kc_region, 50, 350, 0, 100)
+        sleep(3)
+        wait_and_click(global_regions['formation_line_ahead'], 'formation_line_ahead.png', 30)
+        rejigger_mouse(self.kc_region, 50, 750, 0, 100)
         while not (global_regions['next'].exists('next.png')
             or self.kc_region.exists('combat_nb_fight.png')):
             pass
