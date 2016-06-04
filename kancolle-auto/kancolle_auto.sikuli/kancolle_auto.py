@@ -213,6 +213,10 @@ def sortie_action():
         go_home()
         if combat_item.count_damage_above_limit('repair') > 0:
             combat_item.go_repair()
+        #BeemoLin
+        if settings['submarine_switch']:
+            combat_item.switch_sub()
+            log_msg("Attempting to switch out submarines!")
         resupply()
         fleet_needs_resupply[0] = False
         if settings['combined_fleet']:
