@@ -127,6 +127,11 @@ def expedition_cmd(team, (area, no), come_back_team):
 	auto_cmd("place p")
 	auto_cmd("home")
 	auto_cmd("poi")
+	auto_cmd("go")
+	u._sleep(1.0)
+	auto_cmd("home")
+	auto_cmd("poi")
+
 
 def is_handled_by_predefined_func(input_cmd):
 	global _place
@@ -335,17 +340,17 @@ def auto_c():
 			e_flag = False
 
 def combat():
-	ndock_check = True
-	fatigue_check = True
+	kantai_status = True
+	fatigue_status = True
 	
 	if _ndock_check:
 		kantai_status = ndocks_status(data)
 
 	if _fatigue_check:
-		fatigue_check = get_kantai_cond(0)
+		fatigue_status = get_kantai_cond(0)
 
 
-	if ndock_check and fatigue_check:
+	if kantai_status and fatigue_status:
 		show_msg = colored("電：伊401出撃します！", "green")
 		subprocess.call(['./kancolle-auto/run.sh'], shell=True)
 	time.sleep(1)
