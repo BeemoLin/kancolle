@@ -23,9 +23,9 @@ def click_no_wait(position, blur):
 	_m.click(click_x, click_y)
 
 def change_window():
-	_k.press_key('command')
-	_k.tap_key('tab', interval=0.2)
-	_k.release_key('command')
+	#_k.press_key('command')
+	#_k.tap_key('tab', interval=0.2)
+	#_k.release_key('command')
 	_sleep(0.5)
 
 def focus_screen():

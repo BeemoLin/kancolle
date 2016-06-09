@@ -119,6 +119,7 @@ def rejigger_mouse(kc_window, x1, x2, y1, y2, find_position=False):
         util_settings['screen_x'] = temp_screen.width
         util_settings['screen_y'] = temp_screen.height
     if find_position:
+	#temp_game = kc_window.getLastMatch()
         temp_game = kc_window.find(Pattern('menu_main_home.png').exact())
         # Define upper-left corner of game screen
         util_settings['game_x'] = temp_game.x - 99

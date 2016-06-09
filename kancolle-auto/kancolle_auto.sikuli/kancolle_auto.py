@@ -38,6 +38,9 @@ def focus_window():
     global kc_window, settings
     log_msg("Focus on KanColle!")
     myApp = App.focus(settings['program'])
+    wait(2)
+    myApp.focus()
+    wait(2)
     kc_window = myApp.focusedWindow()
     # Wake screen up in case machine has been idle
     rejigger_mouse(kc_window, 370, 770, 100, 400)

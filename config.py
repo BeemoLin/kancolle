@@ -5,7 +5,7 @@ _sleep = (2, 6)
 #_sleep = (0, 0)
 
 #_task_list = ( "", (1, 2), (5, 6))
-_task_list = ( (1, 2), (1, 5), (1, 6))
+_task_list = ( (1, 2), (1, 5), "")
 #_task_list = ( (1, 2), (1, 5), (5, 6))
 #_task_list = ( (1, 2), (1, 6), (5, 6))
 
@@ -34,4 +34,4 @@ _delay_task = [0, 0, 0]
 # current place
 _place = "port"
 #screen offset
-_offset = (6, 25)
+_offset = (0, 55)
