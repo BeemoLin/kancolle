@@ -65,8 +65,8 @@ def main():
 	while _flag:
 		global data
 		global body
-		body = read_port('../poi/cache/START2.json')
-		data = read_port('../poi/cache/PORT.json')
+		body = read_port('../poi/app_compiled/cache/START2.json')
+		data = read_port('../poi/app_compiled/cache/PORT.json')
 		_user_input = raw_input(colored("電：ご命令を", "green") + ">")
 		if is_handled_by_predefined_func(_user_input) is True:
 			continue
@@ -376,7 +376,7 @@ def auto_e():
 			e_flag = False
 
 def e_task():
-	file_path = '../poi/cache/PORT.json'
+	file_path = '../poi/app_compiled/cache/PORT.json'
 
 	show_msg = colored("電：任務中 ", "green")
 	
@@ -433,7 +433,7 @@ def read_port(file_path):
 	return read_data
 
 def get_flag_ship_fuel(team):
-	data = read_port('../poi/cache/PORT.json')
+	data = read_port('../poi/app_compiled/cache/PORT.json')
 	flag_ship_id = str(data["api_deck_port"][team]["api_ship"][0])
 	ships = data["api_ship"]
 	ship_api_id = -1
@@ -459,7 +459,7 @@ def get_flag_ship_fuel(team):
 		return False
 	
 def get_kantai_cond(team):
-	file_path = "../poi/cache/PORT.json"
+	file_path = "../poi/app_compiled/cache/PORT.json"
 	data = read_port(file_path)
 	update_time = os.path.getmtime(file_path)
 	knatai = data["api_deck_port"][team]["api_ship"]
