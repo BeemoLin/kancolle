@@ -316,6 +316,9 @@ class Combat:
                 sleep(5)
                 mouseDown(Button.LEFT) # In case of boss monologue
                 mouseUp()
+                sleep(5)
+                mouseDown(Button.LEFT) # In case of boss monologue
+                mouseUp()
                 rejigger_mouse(self.kc_region, 50, 350, 0, 100)
                 sleep(5)
                 self.loop_post_formation()
