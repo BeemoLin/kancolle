@@ -44,6 +44,36 @@ def sleep(base, flex=-1):
     else:
         tsleep(randint(base, base + flex) + util_settings['sleep_mod'])
 
+def check_ocr(kc_region, text_ref, dir, width):
+    """
+    Helper function for doing the actual OCR in check_timer and check_number.
+    Returns the text it's found, after some basic character fixes/replacements.
+
+    kc_region - Sikuli region
+    text_ref - image name (str) or reference Match object (returned by findAll, for example)
+    dir - 'l' or 'r'; direction to search for text
+    width - positive int; width (in pixels) of area where the timer text should be
+    """
+    if isinstance(text_ref, str):
+        if dir == 'r':
+            text = kc_region.find(text_ref).right(width).text().encode('utf-8')
+        elif dir == 'l':
+            text = kc_region.find(text_ref).left(width).text().encode('utf-8')
+    elif isinstance(text_ref, Match):
+        if dir == 'r':
+            text = kc_region.text_ref.right(width).text().encode('utf-8')
+        elif dir == 'l':
+            text = kc_region.text_ref.left(width).text().encode('utf-8')
+    # Replace characters
+    text = (
+        text.replace('O', '0').replace('o', '0').replace('D', '0')
+        .replace('Q', '0').replace('@', '0').replace('l', '1').replace('I', '1')
+        .replace('[', '1').replace(']', '1').replace('|', '1').replace('!', '1')
+        .replace('Z', '2').replace('S', '5').replace('s', '5').replace('$', '5')
+        .replace('B', '8').replace(':', '8').replace(' ', '').replace('-', '')
+    )
+    return text
+
 def check_timer(kc_region, timer_ref, dir, width, attempt_limit=0):
     """
     Function for grabbing valid Kancolle timer readings (##:##:## format).
@@ -61,24 +91,7 @@ def check_timer(kc_region, timer_ref, dir, width, attempt_limit=0):
     attempt = 0
     while ocr_matching:
         attempt += 1
-        if isinstance(timer_ref, str):
-            if dir == 'r':
-                timer = find(timer_ref).right(width).text().encode('utf-8')
-            elif dir == 'l':
-                timer = find(timer_ref).left(width).text().encode('utf-8')
-        elif isinstance(timer_ref, Match):
-            if dir == 'r':
-                timer = timer_ref.right(width).text().encode('utf-8')
-            elif dir == 'l':
-                timer = timer_ref.left(width).text().encode('utf-8')
-        # Replace characters
-        timer = (
-            timer.replace('O', '0').replace('o', '0').replace('D', '0')
-            .replace('Q', '0').replace('@', '0').replace('l', '1').replace('I', '1')
-            .replace('[', '1').replace(']', '1').replace('|', '1').replace('!', '1')
-            .replace('Z', '2').replace('S', '5').replace('s', '5').replace('$', '5')
-            .replace('B', '8').replace(':', '8').replace(' ', '').replace('-', '')
-        )
+        timer = check_ocr(kc_region, timer_ref, dir, width)
         if len(timer) == 8:
             # Length checks out...
             timer = list(timer)
@@ -98,6 +111,36 @@ def check_timer(kc_region, timer_ref, dir, width, attempt_limit=0):
             return '95:00:00'
         # Otherwise, try again!
         log_warning("Got invalid timer (%s)... trying again!" % timer)
+        sleep(1)
+
+def check_number(kc_region, number_ref, dir, width, attempt_limit=0):
+    """
+    Function for grabbing numbers from the kancolle-auto screen.
+    Attempts to fix erroneous OCR reads and repeats readings until a valid
+    number is returned. Returns found number value.
+
+    kc_region - Sikuli region
+    number_ref - image name (str) or reference Match object (returned by findAll, for example)
+    dir - 'l' or 'r'; direction to search for number
+    width - positive int; width (in pixels) of area where the number should be
+    attempt_limit = how many times the OCR reads should repeat before failing
+    """
+    ocr_matching = True
+    attempt = 0
+    while ocr_matching:
+        attempt += 1
+        number = check_ocr(kc_region, number_ref, dir, width)
+        m = match(r'^\d+$', number)
+        if m:
+            # OCR reading checks out; return number
+            ocr_matching = False
+            return int(number)
+        # If we got this far, the number reading is invalid.
+        # If an attempt_limit is set and met, return 0
+        if attempt_limit != 0 and attempt == attempt_limit:
+            return 0
+        # Otherwise, try again!
+        log_warning("Got invalid number (%s)... trying again!" % number)
         sleep(1)
 
 def rejigger_mouse(kc_window, x1, x2, y1, y2, find_position=False):
@@ -142,7 +185,7 @@ def rejigger_mouse(kc_window, x1, x2, y1, y2, find_position=False):
         global_regions['formation_combinedfleet_2'] = Region(util_settings['game_x'] + 580, util_settings['game_y'] + 150, 160, 50)
         global_regions['formation_combinedfleet_3'] = Region(util_settings['game_x'] + 420, util_settings['game_y'] + 280, 160, 50)
         global_regions['formation_combinedfleet_4'] = Region(util_settings['game_x'] + 580, util_settings['game_y'] + 280, 160, 50)
-        global_regions['quest_category'] = Region(util_settings['game_x'] + 140, util_settings['game_y'] + 110, 65, 340)
+        # global_regions['quest_category'] = Region(util_settings['game_x'] + 140, util_settings['game_y'] + 110, 65, 340)
         global_regions['quest_status'] = Region(util_settings['game_x'] + 710, util_settings['game_y'] + 110, 65, 340)
 
     # Generate random coordinates
@@ -206,11 +249,11 @@ def rnavigation(kc_region, destination, max=0):
     global util_settings
     # Look at all the things we can click!
     menu_main_options = ['menu_main_sortie.png', 'menu_main_fleetcomp.png', 'menu_main_resupply.png',
-        'menu_main_equip.png', 'menu_main_repair.png', 'menu_main_development.png']
+                         'menu_main_equip.png', 'menu_main_repair.png', 'menu_main_development.png']
     menu_top_options = ['menu_top_encyclopedia.png', 'menu_top_inventory.png',
-        'menu_top_furniture.png', 'menu_top_quests.png']
+                        'menu_top_furniture.png', 'menu_top_quests.png']
     menu_side_options = ['menu_side_fleetcomp.png', 'menu_side_resupply.png', 'menu_side_equip.png',
-        'menu_side_repair.png', 'menu_side_development.png']
+                         'menu_side_repair.png', 'menu_side_development.png']
     menu_sortie_options = ['sortie_combat.png', 'sortie_expedition.png', 'sortie_pvp.png']
     menu_sortie_top_options = ['sortie_top_combat.png', 'sortie_top_expedition.png', 'sortie_top_pvp.png']
     final_target = ''
@@ -421,7 +464,7 @@ def rnavigation(kc_region, destination, max=0):
                 final_target = ''
         elif final_target in ['menu_top_quests.png']:
             if kc_region.exists('quests_screen_check.png'):
-                wait_and_click(kc_region, 'quests_screen_check.png', expand=expand_areas('quests_screen_check')) # Go away Ooyodo
+                wait_and_click(kc_region, 'quests_screen_check.png', expand=expand_areas('quests_screen_check'))  # Go away Ooyodo
                 sleep_fast()
                 final_target = ''
         else:
@@ -514,6 +557,56 @@ def pattern_generator(kc_region, pic, expand=[], mod=''):
         elif isinstance(pic, Pattern):
             pic = pic.targetOffset(randint(expand[0], expand[1]), randint(expand[2], expand[3]))
     return pic
+
+# Refresh kancolle. Only supports catbomb situations and browers at the moment
+def refresh_kancolle(kc_window, settings, e):
+    if kc_window.exists('catbomb.png') and settings['recovery_method'] != 'None':
+        if settings['recovery_method'] == 'Browser':
+            # Recovery steps if using a webbrowser with no other plugins
+            # Assumes that 'F5' is a valid keyboard shortcut for refreshing
+            type(Key.F5)
+        elif settings['recovery_method'] == 'KC3':
+            # Recovery steps if using KC3 in Chrome
+            type(Key.F5)
+            sleep(1)
+            type(Key.SPACE)  # In case Exit Confirmation is checked in KC3 Settings
+            sleep(1)
+            type(Key.TAB)  # Tab over to 'Start Anyway' button
+            sleep(1)
+            type(Key.SPACE)
+        elif settings['recovery_method'] == 'KCV':
+            # Recovery steps if using KanColleViewer
+            type(Key.F5)
+        elif settings['recovery_method'] == 'KCT':
+            # Recovery steps if using KanColleTool; refreshes via 'Get API Link' option
+            type(Key.ALT)
+            sleep(1)
+            type(Key.DOWN)
+            sleep(1)
+            type(Key.DOWN)
+            sleep(1)
+            type(Key.ENTER)
+        elif settings['recovery_method'] == 'EO':
+            # Recovery steps if using Electronic Observer
+            type(Key.F5)
+            sleep(1)
+            type(Key.TAB)  # In case Exit Confirmation is checked in EO Settings
+            sleep(1)
+            type(Key.SPACE)
+        # The Game Start button is there and active, so click it to restart
+        sleep(3)
+        rejigger_mouse(kc_window, 370, 770, 10, 200)
+        sleep(3)
+        while not kc_window.exists(Pattern('game_start.png').similar(0.999)):
+            sleep(1)
+        check_and_click(kc_window, 'game_start.png')
+        sleep(2)
+        # Re-initialize kancolle-auto post-catbomb
+        init()
+    else:
+        log_error("Non-catbomb script crash, or catbomb script crash w/ unsupported Viewer!")
+        print e
+        raise
 
 class color:
     """

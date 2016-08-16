@@ -1,1 +1,0 @@
-java -jar C:\sikulix\sikulix.jar -r ..\kancolle_auto.sikuli
