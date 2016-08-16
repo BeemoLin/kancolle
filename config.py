@@ -5,8 +5,8 @@ _sleep = (2, 3)
 #_sleep = (0, 0)
 
 #_task_list = ( (1, 2), (1, 5), "")
-#_task_list = ( (1, 2), (1, 5), (1, 6))
-_task_list = ( (1, 4), (1, 5), (1, 2))
+_task_list = ( (1, 2), (1, 5), (1, 6))
+#_task_list = ( "", (1, 5), (1, 2))
 
 _flag = True
 #click LAG
