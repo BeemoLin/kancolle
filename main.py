@@ -230,7 +230,10 @@ def is_handled_by_predefined_func(input_cmd):
 		return True
 	elif input_cmd == 'cf':
 		_change_fleet = not _change_fleet
-		print colored("Change Fleet = " + str(_change_fleet), "yellow")
+		if _change_fleet:
+			print colored("Change Fleet = " + str(_change_fleet), "green")
+		else:
+			print colored("Change Fleet = " + str(_change_fleet), "red")
 		return True
 	elif input_cmd == 'auto e':
 		_sikuli_auto = False
@@ -419,7 +422,7 @@ def combat():
 def auto_e():
 	combat_list_len = len(_config._combat_list)
 	global current_combat
-	current_combat = 1
+	current_combat = combat_list_len
 	e_flag = True
 	while(e_flag):
 		try:
@@ -433,10 +436,10 @@ def auto_e():
 				print_oneline(show_msg)	
 			else:
 				if(combat_list_len > 0):
-					if (current_combat < combat_list_len):
-						current_combat = current_combat + 1
+					if (current_combat > 0):
+						current_combat = current_combat - 1
 					else:
-						current_combat = 1
+						current_combat = combat_list_len
 
 				e_task()
 			
