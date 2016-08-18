@@ -1,7 +1,5 @@
 # kancolle
 
-http://blog.chunnorris.cc/2015/05/kancolle3.html
-
 Use python 2.7
 
 python package:
@@ -15,3 +13,7 @@ python package:
 start script ``python main.py``
 
 auto expedition ``auto e``
+$("#flashWrap").mousedown(function(e){
+    var clientCoords = "( " + event.clientX + ", " + event.clientY + " )";
+    console.log(clientCoords);
+});

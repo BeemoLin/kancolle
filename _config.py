@@ -4,6 +4,8 @@
 _sleep = (2, 3)
 #_sleep = (0, 0)
 
+_combat_list = (('ee1', 'r1'), ('ee2', 'r2'))
+
 #_task_list = ( (1, 2), (1, 5), "")
 _task_list = ( (1, 2), (1, 5), (3, 5))
 #_task_list = ( "", (1, 5), (1, 2))

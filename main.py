@@ -16,10 +16,16 @@ from termcolor import colored
 init()
 
 #config import
-import config
+import _config
+
+#auto expedition
+_auto_expedition = False
 
 #auto combat
 _sikuli_auto = False
+
+#change fleet
+_change_fleet = False
 
 #auto check fatigue
 _fatigue_check = False
@@ -35,28 +41,28 @@ _place = "port"
 _check_type = "all"
 
 #click LAG
-_LAG = config._LAG
+_LAG = _config._LAG
 
 #expedition_task
-_task_list = config._task_list
+_task_list = _config._task_list
 
 #sleep
-_sleep = config._sleep
+_sleep = _config._sleep
 
 #delay task default(150sec)
-min_delay = config.min_delay
-delay_task = config.delay_task
+min_delay = _config.min_delay
+delay_task = _config.delay_task
 # don't need set this, is radom
-_delay_task = config._delay_task
+_delay_task = _config._delay_task
 
 #screen offset
-_offset = config._offset
+_offset = _config._offset
 
 #self model import
-import Utility
+import _utility
 import _command
 
-u = Utility
+u = _utility
 c = _command
 
 def main():
@@ -73,73 +79,16 @@ def main():
 
 		check_command(_user_input)
 
-def expedition_cmd(team, (area, no), come_back_team):
-	u.focus_screen()
-	u._sleep(3.0)
-	
-	print colored(team, "yellow") + colored("艦隊戻りました", "green")
-
-	# wellcome back
-	auto_cmd("place p")
-	auto_cmd("poi")
-	auto_cmd("go")
-	auto_cmd("home")
-	auto_cmd("poi")
-	for r in range(come_back_team, 0, -1):
-		for j in range(3, 0, -1):
-			auto_cmd("poi")
-		auto_cmd("place p")
-		auto_cmd("poi")
-		auto_cmd("go")
-		auto_cmd("home")
-		auto_cmd("poi")
-	
-	#refill
-	if get_flag_ship_fuel(team) == False:
-		auto_cmd("place p")
-		auto_cmd("home")
-		auto_cmd("poi")
-		u._sleep(2.0)
-		auto_cmd("go")
-		auto_cmd("place r")
-		auto_cmd("enter")
-		auto_cmd('f' + str(team + 1))
-		auto_cmd("all")
-		auto_cmd("place p")
-		auto_cmd("home")
-		auto_cmd("poi")
-		u._sleep(2.0)
-	
-	#expedition
-	if get_flag_ship_fuel(team):
-		auto_cmd("place p")
-		auto_cmd("go")
-		auto_cmd("place e")
-		auto_cmd("enter")
-		auto_cmd("e" + str(area))
-		auto_cmd(str(no))
-		auto_cmd("ok")
-		auto_cmd("f" + str(team + 1))
-		auto_cmd("start")
-
-	#back home
-	u._sleep(1.0)
-	auto_cmd("place p")
-	auto_cmd("home")
-	auto_cmd("poi")
-	auto_cmd("go")
-	u._sleep(1.0)
-	auto_cmd("home")
-	auto_cmd("poi")
-
 
 def is_handled_by_predefined_func(input_cmd):
 	global _place
 	global _flag
 	global _sikuli_auto
+	global _change_fleet
 	global _ndock_check
 	global _fatigue_check
 	global _check_type
+	global _auto_expedition
 	if input_cmd == "exit":
 		_flag = False
 		print colored("電：お疲れさまでした", "green")
@@ -151,6 +100,10 @@ def is_handled_by_predefined_func(input_cmd):
 		return True
 	elif input_cmd == 'place p':
 		_place = "port"
+		print current_status()
+		return True
+	elif input_cmd == 'place f':
+		_place = "fleets"
 		print current_status()
 		return True
 	elif input_cmd == "place e":
@@ -275,54 +228,71 @@ def is_handled_by_predefined_func(input_cmd):
 		subprocess.call(['./5-4-b-rss.sh'], shell=True)
 		print colored("伊401 : ふふーん♪", "green") + colored(" 5-4 Boss(ss) ", "yellow") + colored("伊400型の追撃はしつこいんだから！", "green")
 		return True
+	elif input_cmd == 'cf':
+		_change_fleet = not _change_fleet
+		print colored("Change Fleet = " + str(_change_fleet), "yellow")
+		return True
 	elif input_cmd == 'auto e':
 		_sikuli_auto = False
 		_ndock_check = False
 		_fatigue_check = False
+		_auto_expedition = True
 		auto_e()
 		return True
 	elif input_cmd == 'auto c':
+		_sikuli_auto = True
 		_ndock_check = False
 		_fatigue_check = False
-		auto_c()
+		_auto_expedition = False
+		auto_e()
 		return True
 	elif input_cmd == 'auto cf':
+		_sikuli_auto = True
 		_ndock_check = False
 		_fatigue_check = True
-		auto_c()
+		_auto_expedition = False
+		auto_e()
 		return True
 	elif input_cmd == 'auto cd':
+		_sikuli_auto = True
 		_ndock_check = True
 		_fatigue_check = False
-		auto_c()
+		_auto_expedition = False
+		auto_e()
 		return True
 	elif input_cmd == 'auto cfd':
+		_sikuli_auto = True
 		_ndock_check = True
 		_fatigue_check = True
-		auto_c()
+		_auto_expedition = False
+		auto_e()
 		return True
 	elif input_cmd == 'auto ec':
 		_sikuli_auto = True
 		_ndock_check = False
 		_fatigue_check = False
+		_auto_expedition = True
 		auto_e()
 		return True
 	elif input_cmd == 'auto ecf':
 		_sikuli_auto = True
 		_ndock_check = False
 		_fatigue_check = True
+		_auto_expedition = True
 		auto_e()
 		return True
 	elif input_cmd == 'auto ecd':
 		_sikuli_auto = True
 		_ndock_check = True
 		_fatigue_check = False
+		_auto_expedition = True
 		auto_e()
 		return True
 	elif input_cmd == 'auto':# full command
 		_sikuli_auto = True
 		_ndock_check = True
 		_fatigue_check = True
+		_auto_expedition = True
 		auto_e()
 		return True
 	elif input_cmd == 'game':
@@ -334,18 +304,99 @@ def is_handled_by_predefined_func(input_cmd):
 		print input_cmd + " poi?"
 		return True
 
+#########################task start#########################
+def change_fleets_cmd((area, record_fleet)):
+	u.focus_screen()
+	u._sleep(1.0)
+	
+	print colored(area, "yellow") + " " + colored(record_fleet, "yellow") + colored("艦隊編成變更", "green")
+
+	auto_cmd(area)
+
+	# wellcome back
+	auto_cmd("place p")
+	auto_cmd("poi")
+	auto_cmd("go")
+		
+
+
+	# change record fleet
+	auto_cmd("place f")
+	auto_cmd("enter")
+	auto_cmd("record")
+	auto_cmd("record")
+	auto_cmd(record_fleet)
+	auto_cmd(record_fleet)
+
+	#back home
+	u._sleep(1.0)
+	auto_cmd("place p")
+	auto_cmd("home")
+	auto_cmd("poi")
+
+def expedition_cmd(team, (area, no), come_back_team):
+	u.focus_screen()
+	u._sleep(3.0)
+	
+	print colored(team, "yellow") + colored("艦隊戻りました", "green")
+
+	# wellcome back
+	auto_cmd("place p")
+	auto_cmd("poi")
+	auto_cmd("go")
+	auto_cmd("home")
+	auto_cmd("poi")
+	for r in range(come_back_team, 0, -1):
+		for j in range(3, 0, -1):
+			auto_cmd("poi")
+		auto_cmd("place p")
+		auto_cmd("poi")
+		auto_cmd("go")
+		auto_cmd("home")
+		auto_cmd("poi")
+	
+	#refill
+	if get_flag_ship_fuel(team) == False:
+		auto_cmd("place p")
+		auto_cmd("home")
+		auto_cmd("poi")
+		u._sleep(2.0)
+		auto_cmd("go")
+		auto_cmd("place r")
+		auto_cmd("enter")
+		auto_cmd('f' + str(team + 1))
+		auto_cmd("all")
+		auto_cmd("place p")
+		auto_cmd("home")
+		auto_cmd("poi")
+		u._sleep(2.0)
+	
+	#expedition
+	if get_flag_ship_fuel(team):
+		auto_cmd("place p")
+		auto_cmd("go")
+		auto_cmd("place e")
+		auto_cmd("enter")
+		auto_cmd("e" + str(area))
+		auto_cmd(str(no))
+		auto_cmd("ok")
+		auto_cmd("f" + str(team + 1))
+		auto_cmd("start")
+
+	#back home
+	u._sleep(1.0)
+	auto_cmd("place p")
+	auto_cmd("home")
+	auto_cmd("poi")
+	auto_cmd("go")
+	u._sleep(1.0)
+	auto_cmd("home")
+	auto_cmd("poi")
+#########################task end#########################
+
 def auto_cmd(_cmd):
 	if is_handled_by_predefined_func(_cmd) is False:
 		check_task_command(_cmd)
-
-def auto_c():
-	e_flag = True
-	while(e_flag):
-		try:
-			combat()
-		except KeyboardInterrupt:
-			print colored("\n自動出撃が中断されました", "red")
-			e_flag = False
 
 def combat():
 	kantai_status = True
@@ -361,9 +412,14 @@ def combat():
 	if kantai_status and fatigue_status:
 		show_msg = colored("電：伊401出撃します！", "green")
 		subprocess.call(['./kancolle-auto/run.sh'], shell=True)
+		if _change_fleet:
+			change_fleets_cmd(_config._combat_list[current_combat - 1])
 	time.sleep(1)
 
 def auto_e():
+	combat_list_len = len(_config._combat_list)
+	global current_combat
+	current_combat = 1
 	e_flag = True
 	while(e_flag):
 		try:
@@ -376,6 +432,12 @@ def auto_e():
 				show_msg += colored("今:", "green") + colored(now_time, "yellow")
 				print_oneline(show_msg)	
 			else:
+				if(combat_list_len > 0):
+					if (current_combat < combat_list_len):
+						current_combat = current_combat + 1
+					else:
+						current_combat = 1
+
 				e_task()
 			
 			time.sleep(1)
@@ -417,7 +479,7 @@ def e_task():
 			come_back_team += 1
 			come_back_team_id = 3
 
-	if come_back_team > 0 and come_back_team_id != -1:
+	if _auto_expedition and come_back_team > 0 and come_back_team_id != -1:
 		expedition_cmd(come_back_team_id, _task_list[come_back_team_id - 1], come_back_team)
 	else:
 		if _sikuli_auto:
@@ -560,6 +622,8 @@ def check_task_command(input_cmd):
 	cmd = {}
 	if _place == "port":
 		cmd = c.get_port()
+	elif _place == "fleets":
+		cmd = c.get_fleets()
 	elif _place == "expedition":
 		cmd = c.get_expedition()
 	elif _place == "refill":
@@ -578,6 +642,8 @@ def check_command(input_cmd):
 	cmd = {}
 	if _place == "port":
 		cmd = c.get_port()
+	elif _place == "fleets":
+		cmd = c.get_fleets()
 	elif _place == "expedition":
 		cmd = c.get_expedition()
 	elif _place == "refill":
