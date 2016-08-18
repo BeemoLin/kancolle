@@ -235,9 +235,9 @@ def is_handled_by_predefined_func(input_cmd):
 	elif input_cmd == 'cf':
 		_change_fleet = not _change_fleet
 		if _change_fleet:
-			print colored("Change Fleet = " + str(_change_fleet), "green")
+			print "Change Fleet = " + colored(str(_change_fleet), "green")
 		else:
-			print colored("Change Fleet = " + str(_change_fleet), "red")
+			print "Change Fleet = " + colored(str(_change_fleet), "red")
 		return True
 	elif input_cmd == 'auto e':
 		_sikuli_auto = False
@@ -420,7 +420,7 @@ def combat():
 		show_msg = colored("電：伊401出撃します！", "green")
 		subprocess.call(['./kancolle-auto/run.sh'], shell=True)
 		if _change_fleet:
-			change_fleets_cmd(_config._combat_list[current_combat - 1])
+			change_fleets_cmd(_config._combat_list[_current_combat - 1])
 			if(_combat_list_len > 0):
 				if (_current_combat > 0):
 					_current_combat = _current_combat - 1
