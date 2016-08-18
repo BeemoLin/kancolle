@@ -198,9 +198,9 @@ def is_handled_by_predefined_func(input_cmd):
 		subprocess.call(['./E3.sh'], shell=True)
 		print colored("伊401 : ふふーん♪", "green") + colored(" E3 ", "yellow") + colored("伊400型の追撃はしつこいんだから！", "green")
 		return True
-	elif input_cmd == 'ere3':
-		subprocess.call(['./rE3.sh'], shell=True)
-		print colored("伊401 : ふふーん♪", "green") + colored(" rE3 ", "yellow") + colored("伊400型の追撃はしつこいんだから！", "green")
+	elif input_cmd == 'ee4':
+		subprocess.call(['./E4.sh'], shell=True)
+		print colored("伊401 : ふふーん♪", "green") + colored(" E4 ", "yellow") + colored("伊400型の追撃はしつこいんだから！", "green")
 		return True
 	elif input_cmd == 'ee5':
 		subprocess.call(['./E5.sh'], shell=True)
