@@ -26,8 +26,8 @@ _sikuli_auto = False
 
 #change fleet
 _change_fleet = False
-global combat_list_len
-global current_combat
+global _combat_list_len
+global _current_combat
 _combat_list_len = len(_config._combat_list)
 _current_combat = _combat_list_len
 
