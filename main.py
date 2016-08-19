@@ -26,12 +26,9 @@ _sikuli_auto = False
 
 #change fleet
 _change_fleet = False
-global _combat_list_len
-global _current_combat
 _combat_list_len = len(_config._combat_list)
 _current_combat = _combat_list_len
 
-#auto check fatigue
 _fatigue_check = False
 
 #auto combat check ndock
@@ -234,6 +231,7 @@ def is_handled_by_predefined_func(input_cmd):
 		return True
 	elif input_cmd == 'cf':
 		_change_fleet = not _change_fleet
+		print str(_config._combat_list)
 		if _change_fleet:
 			print "Change Fleet = " + colored(str(_change_fleet), "green")
 		else:
@@ -406,6 +404,8 @@ def auto_cmd(_cmd):
 		check_task_command(_cmd)
 
 def combat():
+	global _combat_list_len
+	global _current_combat
 	kantai_status = True
 	fatigue_status = True
 	
