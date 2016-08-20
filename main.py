@@ -417,15 +417,15 @@ def combat():
 
 	if kantai_status and fatigue_status:
 		show_msg = colored("電：伊401出撃します！", "green")
-		#subprocess.call(['./kancolle-auto/run.sh'], shell=True)
+		subprocess.call(['./kancolle-auto/run.sh'], shell=True)
 		if _change_fleet:
-			#change_fleets_cmd(_config._combat_list[_combat_fleet - 1])
+			print colored("電：交替艦隊 = ", "yellow") + str(_combat_fleet)
+			change_fleets_cmd(_config._combat_list[_combat_fleet - 1])
 			if(_combat_list_len > 0):
 				if (_combat_fleet > 1):
 					_combat_fleet = _combat_fleet - 1
 				else:
 					_combat_fleet = _combat_list_len
-		print "\r\n _combat_fleet = " + str(_combat_fleet)
 	time.sleep(1)
 
 def auto_e():
