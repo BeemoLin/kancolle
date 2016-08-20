@@ -27,7 +27,7 @@ _sikuli_auto = False
 #change fleet
 _change_fleet = False
 _combat_list_len = len(_config._combat_list)
-_current_combat = _combat_list_len
+_combat_fleet = 1
 
 _fatigue_check = False
 
@@ -404,8 +404,7 @@ def auto_cmd(_cmd):
 		check_task_command(_cmd)
 
 def combat():
-	global _combat_list_len
-	global _current_combat
+	global _combat_fleet
 	kantai_status = True
 	fatigue_status = True
 	
@@ -418,14 +417,15 @@ def combat():
 
 	if kantai_status and fatigue_status:
 		show_msg = colored("電：伊401出撃します！", "green")
-		subprocess.call(['./kancolle-auto/run.sh'], shell=True)
+		#subprocess.call(['./kancolle-auto/run.sh'], shell=True)
 		if _change_fleet:
-			change_fleets_cmd(_config._combat_list[_current_combat - 1])
+			#change_fleets_cmd(_config._combat_list[_combat_fleet - 1])
 			if(_combat_list_len > 0):
-				if (_current_combat > 0):
-					_current_combat = _current_combat - 1
+				if (_combat_fleet > 1):
+					_combat_fleet = _combat_fleet - 1
 				else:
-					_current_combat = _combat_list_len
+					_combat_fleet = _combat_list_len
+		print "\r\n _combat_fleet = " + str(_combat_fleet)
 	time.sleep(1)
 
 def auto_e():
