@@ -129,6 +129,20 @@ def is_handled_by_predefined_func(input_cmd):
 		print colored("明石 : これは……はかどります！", "green") 
 		return True
 
+	elif input_cmd == 'cf r1':
+		_combat_fleet = 1
+		print colored(_config._combat_list[_combat_fleet - 1], "green") 
+		return True
+	elif input_cmd == 'cf r2':
+		_combat_fleet = 2
+		print colored(_config._combat_list[_combat_fleet - 1], "green") 
+		return True
+	elif input_cmd == 'cf r3':
+		_combat_fleet = 3
+		print colored(_config._combat_list[_combat_fleet - 1], "green") 
+		return True
+	
+
 	#switch submarine
 	elif input_cmd == 'ss':
 		subprocess.call(['./submarine.sh'], shell=True)
@@ -310,13 +324,14 @@ def is_handled_by_predefined_func(input_cmd):
 		return True
 
 #########################task start#########################
-def change_fleets_cmd((area, record_fleet)):
+def change_fleets_cmd(current_fleet, record_fleet):
 	u.focus_screen()
 	u._sleep(1.0)
-	
-	print colored(area, "yellow") + " " + colored(record_fleet, "yellow") + colored("艦隊編成變更", "green")
 
-	auto_cmd(area)
+	print colored(current_fleet[0], "yellow") + " " + colored(current_fleet[1], "yellow") + colored("原艦隊", "green")
+	print colored(record_fleet[0], "yellow") + " " + colored(record_fleet[1], "yellow") + colored("艦隊編成變更", "green")
+
+	auto_cmd(record_fleet[0])
 
 	# wellcome back
 	auto_cmd("place p")
@@ -328,10 +343,14 @@ def change_fleets_cmd((area, record_fleet)):
 	# change record fleet
 	auto_cmd("place f")
 	auto_cmd("enter")
+	auto_cmd("save")
+	auto_cmd("save")
+	auto_cmd(current_fleet[1])
+	auto_cmd(current_fleet[1])
 	auto_cmd("record")
 	auto_cmd("record")
-	auto_cmd(record_fleet)
-	auto_cmd(record_fleet)
+	auto_cmd(record_fleet[1])
+	auto_cmd(record_fleet[1])
 
 	#back home
 	u._sleep(1.0)
@@ -339,7 +358,7 @@ def change_fleets_cmd((area, record_fleet)):
 	auto_cmd("home")
 	auto_cmd("poi")
 
-def expedition_cmd(team, (area, no), come_back_team):
+def expedition_cmd(team, area, come_back_team):
 	u.focus_screen()
 	u._sleep(3.0)
 	
@@ -382,8 +401,8 @@ def expedition_cmd(team, (area, no), come_back_team):
 		auto_cmd("go")
 		auto_cmd("place e")
 		auto_cmd("enter")
-		auto_cmd("e" + str(area))
-		auto_cmd(str(no))
+		auto_cmd("e" + str(area[0]))
+		auto_cmd(str(area[1]))
 		auto_cmd("ok")
 		auto_cmd("f" + str(team + 1))
 		auto_cmd("start")
@@ -405,6 +424,7 @@ def auto_cmd(_cmd):
 
 def combat():
 	global _combat_fleet
+	current_fleet = _combat_fleet
 	kantai_status = True
 	fatigue_status = True
 	
@@ -419,13 +439,14 @@ def combat():
 		show_msg = colored("電：伊401出撃します！", "green")
 		subprocess.call(['./kancolle-auto/run.sh'], shell=True)
 		if _change_fleet:
-			print colored("電：交替艦隊 = ", "yellow") + str(_combat_fleet)
-			change_fleets_cmd(_config._combat_list[_combat_fleet - 1])
 			if(_combat_list_len > 0):
+				current_fleet = _combat_fleet
 				if (_combat_fleet > 1):
 					_combat_fleet = _combat_fleet - 1
 				else:
 					_combat_fleet = _combat_list_len
+			print colored("電：交替艦隊 = ", "yellow") + str(_combat_fleet)
+			change_fleets_cmd(_config._combat_list[current_fleet - 1], _config._combat_list[_combat_fleet - 1])
 	time.sleep(1)
 
 def auto_e():

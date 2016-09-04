@@ -1,14 +1,14 @@
 # encoding: utf-8
 
 #sleep
-_sleep = (2, 3)
+_sleep = (2, 6)
 #_sleep = (0, 0)
 
-_combat_list = (('ee1', 'r1'), ('ee2', 'r2'))
+_combat_list = (('23', 'r1'), ('321r', 'r2'))
 
 #_task_list = ( (1, 2), (1, 5), "")
-_task_list = ( (1, 2), (1, 5), (3, 5))
-#_task_list = ( "", (1, 5), (1, 2))
+_task_list = ( (1, 2), (1, 5), (5, 6))
+#_task_list = ( "", (1, 2), (3, 5))
 
 _flag = True
 #click LAG

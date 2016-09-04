@@ -11,6 +11,7 @@ class Combat:
     def __init__(self, kc_region, settings):
         self.next_sortie_time = datetime.datetime.now()
         self.kc_region = kc_region
+        self.settings = settings
         self.submarine_switch = settings['submarine_switch']
         self.area_num = settings['combat_area']
         self.subarea_num = settings['combat_subarea']
@@ -261,6 +262,7 @@ class Combat:
                     sleep(3)
                     # If we're not at the home screen, the retreat screen, or the flagship retreat screen,
                     # click through reward(s)
+                    while_count = 0
                     while not (self.kc_region.exists('menu_main_sortie.png') or
                                self.kc_region.exists('combat_flagship_dmg.png') or
                                self.kc_region.exists('combat_retreat.png')):
@@ -268,6 +270,8 @@ class Combat:
                             sleep(1)
                         if check_and_click(global_regions['next'], 'next.png', expand_areas('next')):
                             sleep(1)
+                        while_count += 1
+                        while_count_checker(self.kc_region, self.settings, while_count)
                 # Check to see if we're at the flagship retreat screen
                 if check_and_click(self.kc_region, 'combat_flagship_dmg.png'):
                     sleep(3)
@@ -386,16 +390,18 @@ class Combat:
         check_and_click(self.kc_region, 'lbas_resupply_menu.png')
         sleep(2)
         for lbas_group in self.lbas_groups:
-            log_msg("LBAS %s resupply" % lbas_group)
             # Loop through active air support groups
+            log_msg("Resupplying LBAS group %s!" % lbas_group)
             if lbas_group > 1:
                 # Ony click the tab if it's not the first group
-                check_and_click(self.kc_region, 'lbas_group_tab_%s.png' % lbas_group)
+                check_and_click(self.kc_region, Pattern('lbas_group_tab_%s.png' % lbas_group).similar(0.95))
                 sleep(1)
             if check_and_click(self.kc_region, 'lbas_resupply_button_1.png'):
-                sleep(2)
+                sleep(1)
+                rejigger_mouse(self.kc_region, 50, 100, 50, 100)
+                sleep(1)
                 check_and_click(self.kc_region, 'lbas_resupply_button_2.png')
-                sleep(2)
+                sleep(3)
         # Done resupplying
         check_and_click(self.kc_region, 'lbas_resupply_menu_faded.png')
         sleep(2)
@@ -403,27 +409,30 @@ class Combat:
     # Sends air groups out to desired nodes at beginning of sortie
     def lbas_sortie(self):
         for lbas_group in self.lbas_groups:
-            log_msg("LBAS %s sortie" % lbas_group)
-            # Check to see if the first specified node exists on screen... because the LBAS screen might be covering it
-            if not self.kc_region.exists(self.lbas_nodes[lbas_group][0]):
-                self.kc_region.mouseMove(self.kc_region.find('lbas_panel_switch.png'))
-                sleep(4)
-            check_and_click(self.kc_region, self.lbas_nodes[lbas_group][0], expand_areas('node_select'))
-            # Check to see if the second specified node exists on screen... because the LBAS screen might be covering it
-            if not self.kc_region.exists(self.lbas_nodes[lbas_group][1]):
-                self.kc_region.mouseMove(self.kc_region.find('lbas_panel_switch.png'))
-                sleep(4)
-            check_and_click(self.kc_region, self.lbas_nodes[lbas_group][1], expand_areas('node_select'))
-            sleep(2)
-            check_and_click(self.kc_region, 'lbas_assign_nodes.png')
-            sleep(2)
+            # Only assign nodes if they were assigned to the LBAS group
+            if len(self.lbas_nodes[lbas_group]) == 2:
+                log_msg("Assigning targets to LBAS group %s" % lbas_group)
+                # Check to see if the first specified node exists on screen... because the LBAS screen might be covering it
+                if not self.kc_region.exists(self.lbas_nodes[lbas_group][0] + '.png'):
+                    self.kc_region.mouseMove(self.kc_region.find('lbas_panel_switch.png'))
+                    sleep(3)
+                check_and_click(self.kc_region, self.lbas_nodes[lbas_group][0] + '.png', expand_areas('node_select'))
+                sleep(2)
+                # Check to see if the second specified node exists on screen... because the LBAS screen might be covering it
+                if not self.kc_region.exists(self.lbas_nodes[lbas_group][1] + '.png'):
+                    self.kc_region.mouseMove(self.kc_region.find('lbas_panel_switch.png'))
+                    sleep(3)
+                check_and_click(self.kc_region, self.lbas_nodes[lbas_group][1] + '.png', expand_areas('node_select'))
+                sleep(2)
+                check_and_click(self.kc_region, 'lbas_assign_nodes.png')
+        log_msg("LBAS groups ready with their assignments!")
 
     # Navigate to repair menu and repair any ship above damage threshold. Sets
     # next sortie time accordingly
     def go_repair(self):
         empty_docks = 0
         self.repair_timers = []
-        rnavigation(self.kc_region, 'repair')
+        rnavigation(self.kc_region, 'repair', self.settings)
         # Are there any pre-existing repairs happening?
         try:
             for i in self.kc_region.findAll(Pattern('repair_timer_alt.png').similar(0.5)):
@@ -508,7 +517,7 @@ class Combat:
 
     def switch_sub(self):
         # See if it's possible to switch any submarines out
-        rnavigation(self.kc_region, 'fleetcomp')
+        rnavigation(self.kc_region, 'fleetcomp', self.settings)
         if self.kc_region.exists(Pattern('fleetcomp_dmg_repair.png').similar(self.dmg_similarity)):
             ships_under_repair = 0
             ships_switched_out = 0
@@ -534,9 +543,12 @@ class Combat:
                     sleep_fast()
                     # Make sure the sort order is correct
                     log_msg("Checking shiplist sort order and moving to first page if necessary!")
+                    while_count = 0
                     while not self.kc_region.exists('fleetcomp_shiplist_sort_type.png'):
                         check_and_click(self.kc_region, 'fleetcomp_shiplist_sort_arrow.png')
                         sleep_fast()
+                        while_count += 1
+                        while_count_checker(self.kc_region, self.settings, while_count)
                     if shiplist_page == 1:
                         check_and_click(self.kc_region, 'fleetcomp_shiplist_first_page.png')
                     rejigger_mouse(self.kc_region, 50, 100, 50, 100)
@@ -620,6 +632,7 @@ class Combat:
 class PvP:
     def __init__(self, kc_region, settings):
         self.kc_region = kc_region
+        self.settings = settings
 
     def go_pvp(self):
         # Select random pvp opponent
@@ -648,19 +661,23 @@ class PvP:
         while not check_and_click(global_regions['next'], 'next.png', expand_areas('next')):
             pass
         sleep(2)
+        while_count = 0
         while not self.kc_region.exists('menu_main_sortie.png'):
             check_and_click(global_regions['next'], 'next.png', expand_areas('next'))
             sleep_fast()
+            while_count += 1
+            while_count_checker(self.kc_region, self.settings, while_count)
         log_msg("PvP complete!")
         return True
 
 class FleetcompSwitcher:
     def __init__(self, kc_region, settings):
         self.kc_region = kc_region
+        self.settings = settings
 
     def switch_fleetcomp(self, fleetcomp):
         # Navigate to the fleetcomp page, then enter the fleetcomp screen
-        rnavigation(self.kc_region, 'fleetcomp')
+        rnavigation(self.kc_region, 'fleetcomp', self.settings)
         wait_and_click(self.kc_region, 'fleetcomp_preset_screen_button.png', 30)
         self.kc_region.wait('fleetcomp_preset_switch_button_offset.png', 30)
         # the button_offset image is located 50 pixels above the first button,

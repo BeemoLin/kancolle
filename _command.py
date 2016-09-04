@@ -16,6 +16,7 @@ def get_fleets():
 	cmd = {}
 	cmd['fleets'] = dict()
 	cmd['fleets']['enter'] = ("進入編成", (23, 154), (3, 1))
+	cmd['fleets']['save'] = ("編成紀錄", (70, 358), (3, 1))
 	cmd['fleets']['record'] = ("編成展開", (70, 388), (3, 1))
 	cmd['fleets']['r1'] = ("展開紀錄 1", (294, 201), (3, 1))
 	cmd['fleets']['r2'] = ("展開紀錄 2", (294, 254), (3, 1))

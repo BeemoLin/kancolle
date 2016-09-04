@@ -9,6 +9,7 @@ Settings.MinSimilarity = 0.8
 class Expedition:
     def __init__(self, kc_region, settings):
         self.kc_region = kc_region
+        self.settings = settings
         # self.running_expedition_list = {}
         self.expedition_id_fleet_map = settings['expedition_id_fleet_map']
         # Populate expedition_list with Ensei objects on init
@@ -18,15 +19,18 @@ class Expedition:
 
     def go_expedition(self):
         # Navigate to Expedition menu
-        rnavigation(self.kc_region, 'expedition', 2)
+        rnavigation(self.kc_region, 'expedition', 2, self.settings)
 
     def run_expedition(self, expedition):
         # Run expedition
         log_msg("Let's send fleet %d out for expedition %d!" % (expedition.fleet_id, expedition.id))
         sleep(1)
+        while_count = 0
         while not check_and_click(self.kc_region, expedition.name_pict):
             wait_and_click(self.kc_region, expedition.area_pict, 10)
             sleep_fast()
+            while_count += 1
+            while_count_checker(self.kc_region, self.settings, while_count)
         sleep_fast()
         # If the expedition can't be selected, it's either running or just returned
         if not check_and_click(self.kc_region, 'decision.png'):
@@ -168,10 +172,10 @@ def ensei_factory(ensei_id, fleet_id):
         return Ensei(39, 'ensei_name_39.png', 'ensei_area_05.png', datetime.timedelta(hours=29, minutes=59, seconds=15), fleet_id)
     elif ensei_id == 40:
         return Ensei(40, 'ensei_name_40.png', 'ensei_area_05.png', datetime.timedelta(hours=6, minutes=49, seconds=15), fleet_id)
-    elif ensei_id == 189:
-        return Ensei(189, 'ensei_name_189.png', 'ensei_area_e.png', datetime.timedelta(hours=0, minutes=15, seconds=0), fleet_id)
-    elif ensei_id == 190:
-        return Ensei(190, 'ensei_name_190.png', 'ensei_area_e.png', datetime.timedelta(hours=0, minutes=30, seconds=0), fleet_id)
+    elif ensei_id == 9998:
+        return Ensei(9998, 'ensei_name_preboss.png', 'ensei_area_e.png', datetime.timedelta(hours=0, minutes=15, seconds=0), fleet_id)
+    elif ensei_id == 9999:
+        return Ensei(9999, 'ensei_name_boss.png', 'ensei_area_e.png', datetime.timedelta(hours=0, minutes=30, seconds=0), fleet_id)
     else:
         log_warning("%s is an invalid/unsupported expedition! Defaulting to expedition 2!" % ensei_id)
         return ensei_factory(2, fleet_id)
