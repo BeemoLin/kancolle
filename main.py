@@ -86,6 +86,7 @@ def is_handled_by_predefined_func(input_cmd):
 	global _flag
 	global _sikuli_auto
 	global _change_fleet
+	global _combat_fleet
 	global _ndock_check
 	global _fatigue_check
 	global _check_type
@@ -131,15 +132,21 @@ def is_handled_by_predefined_func(input_cmd):
 
 	elif input_cmd == 'cf r1':
 		_combat_fleet = 1
-		print colored(_config._combat_list[_combat_fleet - 1], "green") 
+		record_fleet = _config._combat_list[_combat_fleet - 1]
+		print colored(record_fleet, "green")
+		auto_cmd(record_fleet[0])
 		return True
 	elif input_cmd == 'cf r2':
 		_combat_fleet = 2
-		print colored(_config._combat_list[_combat_fleet - 1], "green") 
+		record_fleet = _config._combat_list[_combat_fleet - 1]
+		print colored(record_fleet, "green")
+		auto_cmd(record_fleet[0])
 		return True
 	elif input_cmd == 'cf r3':
 		_combat_fleet = 3
-		print colored(_config._combat_list[_combat_fleet - 1], "green") 
+		record_fleet = _config._combat_list[_combat_fleet - 1]
+		print colored(record_fleet, "green")
+		auto_cmd(record_fleet[0])
 		return True
 	
 
@@ -437,7 +444,7 @@ def combat():
 
 	if kantai_status and fatigue_status:
 		show_msg = colored("電：伊401出撃します！", "green")
-		subprocess.call(['./kancolle-auto/run.sh'], shell=True)
+		#subprocess.call(['./kancolle-auto/run.sh'], shell=True)
 		if _change_fleet:
 			if(_combat_list_len > 0):
 				current_fleet = _combat_fleet
@@ -445,8 +452,9 @@ def combat():
 					_combat_fleet = _combat_fleet - 1
 				else:
 					_combat_fleet = _combat_list_len
+			print colored("電：現在艦隊 = ", "yellow") + str(current_fleet)
 			print colored("電：交替艦隊 = ", "yellow") + str(_combat_fleet)
-			change_fleets_cmd(_config._combat_list[current_fleet - 1], _config._combat_list[_combat_fleet - 1])
+			#change_fleets_cmd(_config._combat_list[current_fleet - 1], _config._combat_list[_combat_fleet - 1])
 	time.sleep(1)
 
 def auto_e():
