@@ -574,6 +574,7 @@ def refresh_kancolle(kc_region, settings, e):
             type(Key.F5)
         elif settings['recovery_method'] == 'KC3':
             # Recovery steps if using KC3 in Chrome
+            type("r", KEY_CMD)
             type(Key.F5)
             sleep(1)
             type(Key.SPACE)  # In case Exit Confirmation is checked in KC3 Settings

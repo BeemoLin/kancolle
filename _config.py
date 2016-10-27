@@ -4,10 +4,11 @@
 _sleep = (2, 6)
 #_sleep = (0, 0)
 
-_combat_list = (('23', 'r1'), ('321r', 'r2'))
+_combat_list = (('23', 'r1'), ('15', 'r2'))
+#_combat_list = (('23', 'r1'), ('54r', 'r2'), ('pvp', 'r3'))
 
 #_task_list = ( (1, 2), (1, 5), "")
-_task_list = ( (1, 2), (1, 5), (5, 6))
+_task_list = ( (1, 2), (2, 2), (5, 6))
 #_task_list = ( "", (1, 2), (3, 5))
 
 _flag = True

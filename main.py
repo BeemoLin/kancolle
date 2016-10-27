@@ -198,6 +198,10 @@ def is_handled_by_predefined_func(input_cmd):
 		subprocess.call(['./1-5-a.sh'], shell=True)
 		print colored("伊401", "green") + colored(" 1-5-a ", "yellow") + colored("出撃します！！", "green")
 		return True
+	elif input_cmd == '16':
+		subprocess.call(['./1-6.sh'], shell=True)
+		print colored("伊401", "green") + colored(" 1-6 ", "yellow") + colored("出撃します！！", "green")
+		return True
 	elif input_cmd == '22':
 		subprocess.call(['./2-2.sh'], shell=True)
 		print colored("伊401", "green") + colored(" 2-2 ", "yellow") + colored("出撃します！！", "green")
@@ -221,6 +225,14 @@ def is_handled_by_predefined_func(input_cmd):
 	elif input_cmd == '33':
 		subprocess.call(['./3-3.sh'], shell=True)
 		print colored("伊401", "green") + colored(" 3-3 ", "yellow") + colored("出撃します！！", "green")
+		return True
+	elif input_cmd == '35':
+		subprocess.call(['./3-5.sh'], shell=True)
+		print colored("伊401", "green") + colored(" 3-5 ", "yellow") + colored("出撃します！！", "green")
+		return True
+	elif input_cmd == '45':
+		subprocess.call(['./4-5.sh'], shell=True)
+		print colored("伊401", "green") + colored(" 4-5 ", "yellow") + colored("出撃します！！", "green")
 		return True
 	elif input_cmd == '52rb':
 		subprocess.call(['./5-2-b.sh'], shell=True)
