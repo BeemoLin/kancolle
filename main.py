@@ -230,11 +230,19 @@ def is_handled_by_predefined_func(input_cmd):
 		subprocess.call(['./3-5.sh'], shell=True)
 		print colored("伊401", "green") + colored(" 3-5 ", "yellow") + colored("出撃します！！", "green")
 		return True
+	elif input_cmd == '42':
+		subprocess.call(['./4-2.sh'], shell=True)
+		print colored("伊401", "green") + colored(" 4-2 ", "yellow") + colored("出撃します！！", "green")
+		return True
+	elif input_cmd == '44':
+		subprocess.call(['./4-4.sh'], shell=True)
+		print colored("伊401", "green") + colored(" 4-4 ", "yellow") + colored("出撃します！！", "green")
+		return True
 	elif input_cmd == '45':
 		subprocess.call(['./4-5.sh'], shell=True)
 		print colored("伊401", "green") + colored(" 4-5 ", "yellow") + colored("出撃します！！", "green")
 		return True
-	elif input_cmd == '52rb':
+	elif input_cmd == '52':
 		subprocess.call(['./5-2-b.sh'], shell=True)
 		print colored("伊401 : ふふーん♪", "green") + colored(" 5-2 Boss ", "yellow") + colored("伊400型の追撃はしつこいんだから！", "green")
 		return True
@@ -261,6 +269,10 @@ def is_handled_by_predefined_func(input_cmd):
 	elif input_cmd == '54rss':
 		subprocess.call(['./5-4-b-rss.sh'], shell=True)
 		print colored("伊401 : ふふーん♪", "green") + colored(" 5-4 Boss(ss) ", "yellow") + colored("伊400型の追撃はしつこいんだから！", "green")
+		return True
+	elif input_cmd == '61':
+		subprocess.call(['./6-1.sh'], shell=True)
+		print colored("伊401 : ふふーん♪", "green") + colored(" 6-1 ", "yellow") + colored("伊400型の追撃はしつこいんだから！", "green")
 		return True
 	elif input_cmd == 'cf':
 		_change_fleet = not _change_fleet

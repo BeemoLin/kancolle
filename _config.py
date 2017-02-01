@@ -1,14 +1,14 @@
 # encoding: utf-8
 
 #sleep
-_sleep = (2, 6)
+_sleep = (2, 7)
 #_sleep = (0, 0)
 
-_combat_list = (('23', 'r1'), ('15', 'r2'))
-#_combat_list = (('23', 'r1'), ('54r', 'r2'), ('pvp', 'r3'))
+_combat_list = (('54rb', 'r1'), ('23', 'r2'))
+#_combat_list = (('54ss', 'r1'), ('23', 'r2'), ('15', 'r3'))
 
 #_task_list = ( (1, 2), (1, 5), "")
-_task_list = ( (1, 2), (2, 2), (5, 6))
+_task_list = ( (1, 2), (1, 5), (5, 6))
 #_task_list = ( "", (1, 2), (3, 5))
 
 _flag = True
