@@ -138,11 +138,14 @@ def resupply():
                     fleet_flag = 'fleet_%d.png' % (fleet_id + 1)
                     fleet_flag_selected = 'fleet_%ds.png' % (fleet_id + 1)
                     while_count = 0
-                    while not global_regions['fleet_flags_main'].exists(Pattern(fleet_flag_selected).similar(0.95)):
+                    while not global_regions['fleet_flags_main'].exists(Pattern(fleet_flag_selected).similar(0.92)):
+                        log_msg('Change fleet %d to resupply now!' % (fleet_id + 1))
                         global_regions['fleet_flags_main'].click(pattern_generator(global_regions['fleet_flags_main'], fleet_flag, expand_areas('fleet_id')))
+                        check_and_click(global_regions['fleet_flags_main'], pattern_generator(global_regions['fleet_flags_main'], Pattern('resupply_all.png').exact()), expand_areas('fleet_id'))
                         sleep_fast()
                         while_count += 1
                         while_count_checker(kc_window, settings, while_count)
+                log_msg('Fleet %d to resupply now!' % (fleet_id + 1))
                 check_and_click(global_regions['fleet_flags_main'], pattern_generator(global_regions['fleet_flags_main'], Pattern('resupply_all.png').exact()), expand_areas('fleet_id'))
                 sleep_fast()
         log_success("Done resupplying!")
