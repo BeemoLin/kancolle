@@ -10,8 +10,8 @@ _combat_list = (('54rb', 'r1'), ('23', 'r2'))
 #_combat_list = (('11', 'r1'), ('11', 'r2'), ('11', 'r3'))
 
 #_task_list = ( (1, 2), (1, 5), "")
-#_task_list = ( (1, 2), (1, 5), (5, 6))
-_task_list = ( "", (1, 2), (1, 5))
+_task_list = ( (1, 2), (1, 6), (1, 5))
+#_task_list = ( "", (1, 2), (1, 5))
 
 _flag = True
 #click LAG
