@@ -1,4 +1,5 @@
 # kancolle
+用python為基礎-的kancolle遊戲外掛，已退坑，無更新
 
 Use python 2.7
 
